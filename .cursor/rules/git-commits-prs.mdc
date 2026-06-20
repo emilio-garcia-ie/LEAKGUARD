@@ -12,13 +12,13 @@ alwaysApply: true
 - No usar `--no-verify`, `--amend` salvo que el usuario lo pida y cumpla las condiciones de seguridad.
 
 ## Nunca commitear
-- `proxy/.env`, `functions/.env`, `.env`, `config.js`
+- `backend/.env`, `legacy/proxy/.env`, `.env`, `config.js`
 - `node_modules/`, credenciales, tokens, API keys
 - Archivos con datos reales de filtraciones o PII
 
 ## Antes de un PR
 1. `git status` y `git diff` — revisar que no haya secretos.
-2. Si tocaste `functions/index.js`, verificar que `proxy/server.js` siga alineado (o viceversa).
+2. Si tocaste `backend/app/services/`, verificar que routes y schemas sigan alineados.
 3. Si hay lógica nueva, incluir o actualizar unit tests (ver rule `testing`).
 4. Si cambiaste `SDD.md`, actualizar versión + `CHANGELOG.md`.
 

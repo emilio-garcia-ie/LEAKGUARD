@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [3.2.0] - 2026-06-20
+
+### Fixed
+
+- SDD.md: numeración de secciones corregida (§1–10 secuencial, antes saltaba §6 y §8)
+- `testing.mdc`: actualizado de v1 (`functions/`, `app.js`) a v2 (`backend/`, `frontend/`, pytest/vitest)
+- `git-commits-prs.mdc`: secretos y checklist PR actualizados a rutas v2
+- `sdd-documentation.mdc`: referencia de versión actualizada a v3.2
+
+---
+
 ## [3.1.0] - 2026-06-20
 
 ### Changed (SDD)

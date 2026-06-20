@@ -1,6 +1,6 @@
 # SDD: LeakGuard
 
-**Versión:** 3.1 (Alineado con código real)  
+**Versión:** 3.2 (Corregido numeración y Cursor rules)  
 **Estado:** Documento sincronizado con `frontend/` + `backend/` + `legacy/`  
 **Objetivo:** Plataforma de threat intelligence OSINT con proxy seguro, riesgo explicable y verificación humana.  
 **Repositorio:** https://github.com/paltaunkwnow/LEAKGUARD
@@ -11,6 +11,7 @@
 
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
+| 3.2 | 2026-06-20 | Equipo LeakGuard | Numeración §1–10 corregida; Cursor rules alineadas a v2 stack. |
 | 3.1 | 2026-06-20 | Equipo LeakGuard | SDD reescrito: estado honesto por módulo (implementado / parcial / roadmap). |
 | 3.0 | 2026-06-20 | Equipo LeakGuard | Migración a Next.js 14 + FastAPI + PostgreSQL + Redis. |
 | 2.1 | 2026-06-20 | Equipo LeakGuard | Sección 9: Testing y Calidad de Código. |
@@ -316,7 +317,7 @@ Documentación interactiva: `http://localhost:8000/docs`
 
 ---
 
-## 9. Testing y Calidad de Código
+## 8. Testing y Calidad de Código
 
 ### 9.1. Unit Tests (objetivo)
 **Backend (`pytest`):**
@@ -342,12 +343,12 @@ Documentación interactiva: `http://localhost:8000/docs`
 
 ---
 
-## 10. Pitch Final (30 segundos)
+## 9. Pitch Final (30 segundos)
 
 "Mientras herramientas opacas comercializan datos filtrados en secreto, **LeakGuard** es transparente y seguro. Consultamos índices OSINT con proxy FastAPI — el token nunca llega al navegador —, censuramos credenciales, calculamos riesgo explicable y permitimos verificación humana con audit trail en PostgreSQL. Nuestra IA (GPT-4o-mini + RAG offline) traduce incidentes a recomendaciones accionables. De filtraciones dispersas a inteligencia verificada en segundos."
 
 ---
 
-## 11. Descargo de Responsabilidad Legal (Footer)
+## 10. Descargo de Responsabilidad Legal (Footer)
 
 "LeakGuard indexa metadatos de filtraciones públicas vía APIs OSINT. No almacenamos ni mostramos credenciales en texto claro — solo representaciones censuradas. La información se proporciona con fines de concienciación y seguridad. Verifique la autenticidad de las fuentes directamente."

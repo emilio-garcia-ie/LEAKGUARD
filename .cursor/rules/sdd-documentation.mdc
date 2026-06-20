@@ -12,7 +12,7 @@ alwaysApply: false
 3. Separar **implementado** vs **roadmap** — no documentar como hecho lo que no existe en el repo.
 
 ## Referencias
-- `SDD-plan.md` — estado implementado vs roadmap (v3.0 completado).
+- `SDD-plan.md` — backlog de evolución (Fases B–E), alineación v3.1 completada.
 - Arquitectura v2: `frontend/` (Next.js) + `backend/` (FastAPI) + PostgreSQL + Redis.
 - Legacy v1: `legacy/` (Firebase + vanilla JS).
 

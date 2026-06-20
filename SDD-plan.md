@@ -1,6 +1,6 @@
 # SDD Plan: Evolución de LeakGuard
 
-**Estado:** Plan de alineación SDD ↔ código **COMPLETADO** (SDD v3.1 — 2026-06-20)  
+**Estado:** Plan de alineación SDD ↔ código **COMPLETADO** (SDD v3.2 — 2026-06-20)  
 **Documento vivo:** backlog y tareas pendientes para cerrar brechas entre SDD y producto  
 **Fuente de verdad:** [SDD.md](SDD.md) · Historial: [CHANGELOG.md](CHANGELOG.md)
 
@@ -10,7 +10,7 @@
 
 | Fase | Estado | Objetivo |
 |------|--------|----------|
-| **A — Alineación documentación** | ✅ Completada | SDD v3.1 refleja código real con estados ✅ / ⚠️ / 🔜 |
+| **A — Alineación documentación** | ✅ Completada | SDD v3.2 refleja código real con estados ✅ / ⚠️ / 🔜 |
 | **B — Calidad y tests** | ⚠️ En progreso | pytest + vitest + smoke tests (SDD §9) |
 | **C — Privacidad y scraping** | 🔜 Pendiente | K-Anonymity, scrapers autónomos, cron → Redis |
 | **D — Inteligencia avanzada** | 🔜 Pendiente | OTX/Ransomware.live, resúmenes ejecutivos, alertas push |
@@ -41,7 +41,7 @@
 - [x] Scrape URL (BS4 + Playwright opcional) — `POST /api/v1/scrape`
 
 ### Documentación y tooling
-- [x] SDD v3.1 con módulos 1–11 y tabla API
+- [x] SDD v3.2 con módulos 1–11 y tabla API (§1–10)
 - [x] Legacy v1 en `legacy/` (`npm run dev:legacy`)
 - [x] Cursor rules en `.cursor/rules/` (7 archivos)
 
@@ -67,7 +67,7 @@
 
 ### Fase B — Tests y calidad (prioridad inmediata)
 
-**Objetivo:** Cumplir SDD §9 antes de añadir features grandes.
+**Objetivo:** Cumplir SDD §8 antes de añadir features grandes.
 
 | Tarea | Archivos | Criterio de aceptación |
 |-------|----------|------------------------|
