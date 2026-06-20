@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
 
 type ThreatMapItem = {
   id: string;
@@ -40,14 +41,20 @@ const getMarkerOptions = (status: string) => {
 
 function MapInner({ threats }: Props) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return <div className="h-64 bg-slate-900 rounded-lg animate-pulse" />;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [MapComponents, setMapComponents] = useState<Record<string, React.ComponentType<any>> | null>(null);
 
-  /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unused-vars */
-  const L = require("leaflet");
-  const { MapContainer, TileLayer, CircleMarker, Popup } = require("react-leaflet");
-  require("leaflet/dist/leaflet.css");
-  /* eslint-enable @typescript-eslint/no-require-imports, @typescript-eslint/no-unused-vars */
+  useEffect(() => {
+    setMounted(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    import("react-leaflet").then((mod: any) =>
+      setMapComponents(mod)
+    );
+  }, []);
+
+  if (!mounted || !MapComponents) return <div className="h-64 bg-slate-900 rounded-lg animate-pulse" />;
+
+  const { MapContainer, TileLayer, CircleMarker, Popup } = MapComponents;
 
   return (
     <MapContainer center={[20, 0]} zoom={2} className="h-64 w-full rounded-lg z-0">

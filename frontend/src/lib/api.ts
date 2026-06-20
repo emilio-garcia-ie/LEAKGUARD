@@ -1,6 +1,11 @@
-/** Browser: use NEXT_PUBLIC_API_URL when set (Docker/direct); else relative URL for Next rewrites. */
+/**
+ * Browser: use NEXT_PUBLIC_API_URL when set (Docker/direct); else relative URL for Next rewrites.
+ * Server (SSR/rewrites): use INTERNAL_API_URL for Docker internal networking.
+ */
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
+  (typeof window === "undefined"
+    ? process.env.INTERNAL_API_URL
+    : process.env.NEXT_PUBLIC_API_URL)?.replace(/\/$/, "") ??
   (typeof window !== "undefined" ? "" : "http://localhost:8000");
 
 function parseApiError(data: unknown, status: number): string {
