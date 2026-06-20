@@ -1,0 +1,50 @@
+---
+description: Despliegue Firebase, secrets y proxy en producción
+globs: firebase.json,.firebaserc,functions/**/*
+alwaysApply: false
+---
+
+# Firebase deploy
+
+## Proyecto
+- Firebase project: `leakguard-threat-intel` (`.firebaserc`)
+- Hosting sirve la raíz (`index.html`, `app.js`, `styles.css`)
+- `proxy/` y `functions/` están excluidos del hosting estático
+
+## Rutas API (firebase.json rewrites)
+| Ruta | Cloud Function |
+|------|----------------|
+| `POST /api/scan` | `scanProxy` |
+| `POST /api/breach-check` | `breachCheckProxy` |
+| `GET /api/breaches-recent` | `breachesRecentProxy` |
+
+Cualquier otra ruta → `index.html` (SPA fallback).
+
+## Secret obligatorio
+```bash
+firebase functions:secrets:set OSINT_TOKEN
+```
+Sin este secret, `scanProxy` responde 503. **Nunca** poner el token en el frontend ni en `firebase.json`.
+
+## Deploy estándar
+```bash
+cd functions && npm install && cd ..
+firebase deploy --only functions,hosting
+```
+
+Solo desplegar cuando el usuario lo pida. No hacer deploy automático tras cada cambio.
+
+## Desarrollo local (no es Firebase)
+```bash
+cd proxy && cp .env.example .env   # OSINT_TOKEN + PORT=8787
+npm install && npm start
+```
+Abrir `http://localhost:8787` — **no** abrir `index.html` directo (el proxy es necesario).
+
+## Checklist post-deploy
+1. `index.html` carga en la URL de hosting.
+2. Las 3 rutas `/api/*` responden (no 404).
+3. `POST /api/scan` sin token configurado → 503, no 500 con stack trace expuesto.
+
+## Sincronización proxy ↔ functions
+Si cambias lógica de proxy en `functions/index.js`, replicar en `proxy/server.js` para que dev local y producción se comporten igual.

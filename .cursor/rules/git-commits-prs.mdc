@@ -1,0 +1,33 @@
+---
+description: Git commits, PRs y qué no subir al repo
+alwaysApply: true
+---
+
+# Git y pull requests
+
+## Commits
+- **Solo commitear cuando el usuario lo pida explícitamente.**
+- Mensaje conciso (1-2 frases), enfocado en el *porqué*.
+- Usar HEREDOC para mensajes multilínea.
+- No usar `--no-verify`, `--amend` salvo que el usuario lo pida y cumpla las condiciones de seguridad.
+
+## Nunca commitear
+- `proxy/.env`, `functions/.env`, `.env`, `config.js`
+- `node_modules/`, credenciales, tokens, API keys
+- Archivos con datos reales de filtraciones o PII
+
+## Antes de un PR
+1. `git status` y `git diff` — revisar que no haya secretos.
+2. Si tocaste `functions/index.js`, verificar que `proxy/server.js` siga alineado (o viceversa).
+3. Si hay lógica nueva, incluir o actualizar unit tests (ver rule `testing`).
+4. Si cambiaste `SDD.md`, actualizar versión + `CHANGELOG.md`.
+
+## Crear PR (cuando lo pidan)
+- Usar `gh pr create` con Summary + Test plan.
+- Push con `-u origin HEAD` si la rama no está en remoto.
+- No force-push a `main`/`master`.
+
+## Estilo de commits del repo
+Ejemplos existentes:
+- `Add login breach alerts and free XposedOrNot OSINT integration.`
+- `Add SDD: Software Design Document for LeakGuard`
