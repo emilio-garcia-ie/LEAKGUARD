@@ -7,7 +7,16 @@ All notable changes to the SDD.md document will be documented in this file.
 ### Planned
 - Align SDD with actual implemented architecture (Firebase + vanilla JS + OSINT APIs)
 - Replace non-implemented modules with roadmap entries
-- Add version history section inside SDD.md
+
+---
+
+## [2.1.0] - 2026-06-20
+
+### Added
+- Section 9: Testing and Code Quality — unit tests, smoke tests, code agent strategy
+- Unit test coverage requirements for backend (70%) and frontend (50%)
+- Smoke test suite for post-deploy verification
+- Code agent must run unit and smoke tests on every PR
 
 ---
 

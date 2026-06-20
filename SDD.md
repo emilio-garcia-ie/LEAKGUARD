@@ -12,6 +12,7 @@
 
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
+| 2.1 | 2026-06-20 | Equipo LeakGuard | Sección 9: Testing y Calidad de Código — unit tests, smoke tests, estrategia del agente de código |
 | 2.0 | 2026-06-20 | Equipo LeakGuard | Draft inicial con 8 módulos, stack FastAPI/Next.js/Playwright/Tor/Redis/PostgreSQL/OpenAI |
 
 > **Nota:** La versión actual describe una arquitectura ambiciosa que no se implementó tal cual. El código real usa Firebase + vanilla JS + APIs OSINT externas. Ver [SDD-plan.md](SDD-plan.md) para el plan de alineación.
@@ -257,12 +258,41 @@ Acción recomendada: Revisar accesos urgentemente.
 
 ---
 
-## 7. Pitch Final (30 segundos)
+## 9. Testing y Calidad de Código
+
+### 9.1. Unit Tests
+- **Backend (Cloud Functions):** Tests unitarios para cada función proxy (`scanProxy`, `breachCheckProxy`, `breachesRecentProxy`) cubriendo:
+  - Validación de inputs (campos requeridos, tipos, límites)
+  - Respuestas exitosas del upstream
+  - Errores del upstream (502, timeouts)
+  - CORS headers
+- **Frontend (app.js):** Tests para funciones puras:
+  - `calculateRealRiskPercent()` — fórmula ponderada
+  - `generateExposureRecommendations()` — prioridades correctas
+  - `parseOsintResponse()` — múltiples formatos de respuesta
+  - Censura de credenciales (`censorCredentials()`)
+- **Framework:** Jest (Node.js) para backend, Vitest o Jest para frontend.
+
+### 9.2. Smoke Tests
+- **E2E básico:** Al desplegar, ejecutar automáticamente:
+  1. Verificar que `index.html` carga sin errores 4xx/5xx
+  2. Verificar que las 3 rutas de API (`/api/scan`, `/api/breach-check`, `/api/breaches-recent`) responden (pueden devolver error de auth si no hay token, pero no 404)
+  3. Verificar que el dashboard renderiza las 4 gráficas sin crash
+- **Automatización:** Script de smoke test que se ejecuta post-deploy en Firebase Hosting.
+
+### 9.3. Estrategia del Agente de Código
+- Todo PR debe incluir tests unitarios para lógica nueva.
+- Los smoke tests se ejecutan automáticamente post-deploy.
+- Cobertura mínima: 70% en backend, 50% en frontend (MVP hackathon).
+
+---
+
+## 10. Pitch Final (30 segundos)
 
 "Mientras que herramientas como VECERT roban datos filtrados y los venden en secreto, LeakWatch AI es completamente transparente. Rastreamos los anuncios públicos de grupos de ransomware y foros criminales, pero nunca almacenamos ni mostramos credenciales o datos personales. Cada alerta muestra la URL exacta de la fuente original y un nivel de confianza verificado con OSINT. Nuestra IA traduce el caos técnico a un resumen ejecutivo accionable y nuestro buscador es 100% anónimo gracias a hash parcial. Pasamos de 'información oscura' a 'inteligencia verificada y ética en menos de 3 segundos'."
 
 ---
 
-## 8. Descargo de Responsabilidad Legal (Para incluir en el Footer)
+## 11. Descargo de Responsabilidad Legal (Para incluir en el Footer)
 
 "LeakWatch AI solo indexa metadatos de anuncios públicos disponibles en internet. No facilitamos el acceso a datos filtrados, ni almacenamos información personal. Toda la información mostrada es de dominio público y se proporciona únicamente con fines de concienciación y seguridad. Recomendamos a los usuarios verificar la autenticidad de las fuentes directamente."
