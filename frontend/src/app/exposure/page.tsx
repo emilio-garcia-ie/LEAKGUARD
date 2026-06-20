@@ -84,17 +84,23 @@ export default function ExposurePage() {
             <Card className="overflow-x-auto">
               <CardHeader><CardTitle>Registros ({result.records.length})</CardTitle></CardHeader>
               <CardContent className="p-0">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm table-fixed">
                   <thead className="text-slate-500 border-b border-slate-800">
-                    <tr>{["Fecha", "Fuente", "Login", "Credencial", "Severidad"].map((h) => <th key={h} className="px-4 py-3 text-left">{h}</th>)}</tr>
+                    <tr>
+                      <th className="px-4 py-3 text-left w-[110px]">Fecha</th>
+                      <th className="px-4 py-3 text-left w-[180px]">Fuente</th>
+                      <th className="px-4 py-3 text-left">Login</th>
+                      <th className="px-4 py-3 text-left w-[180px]">Credencial</th>
+                      <th className="px-4 py-3 text-left w-[100px]">Severidad</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {result.records.map((r, i) => (
                       <tr key={i} className="border-b border-slate-800/40">
-                        <td className="px-4 py-2 font-mono text-slate-500">{String(r.date)}</td>
-                        <td className="px-4 py-2 max-w-xs truncate">{String(r.title)}</td>
-                        <td className="px-4 py-2 font-mono">{String(r.login)}</td>
-                        <td className="px-4 py-2 font-mono text-red-400">{String(r.credential)}</td>
+                        <td className="px-4 py-2 font-mono text-slate-400 text-xs whitespace-nowrap">{String(r.date)}</td>
+                        <td className="px-4 py-2 truncate text-slate-300" title={String(r.sourceName || r.title)}>{String(r.sourceName || r.title)}</td>
+                        <td className="px-4 py-2 font-mono text-cyan-300 truncate" title={String(r.login)}>{String(r.login)}</td>
+                        <td className="px-4 py-2 font-mono text-red-400 truncate" title={String(r.credential)}>{String(r.credential)}</td>
                         <td className="px-4 py-2"><Badge className={statusBadge(String(r.severity))}>{String(r.severity)}</Badge></td>
                       </tr>
                     ))}

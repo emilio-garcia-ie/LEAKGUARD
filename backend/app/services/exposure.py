@@ -89,10 +89,21 @@ def parse_osint_response(data: dict[str, Any] | None) -> tuple[list[dict[str, An
                     else "—"
                 )
 
+                # Extract date: try entry-level fields first, then source-level
+                entry_date = (
+                    entry.get("LastActive") or entry.get("Date") or entry.get("date")
+                    or entry.get("Created") or entry.get("created")
+                    or source_data.get("LastUpdate") or source_data.get("Date")
+                    or source_data.get("date") or "—"
+                )
+                # Normalize date to YYYY-MM-DD if it's a datetime string
+                if isinstance(entry_date, str) and len(entry_date) > 10 and " " in entry_date:
+                    entry_date = entry_date.split(" ")[0]
+
                 records.append(
                     {
-                        "date": source_data.get("LastUpdate") or source_data.get("Date") or source_data.get("date") or "—",
-                        "title": title[:77] + "..." if len(str(title)) > 80 else title,
+                        "date": entry_date,
+                        "title": source_name,
                         "sourceName": source_name,
                         "login": login_display,
                         "credential": cred,
