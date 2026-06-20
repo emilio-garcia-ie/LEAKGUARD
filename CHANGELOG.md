@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `git-commits-prs.mdc`: secretos y checklist PR actualizados a rutas v2
 - `sdd-documentation.mdc`: referencia de versión actualizada a v3.2
 
+### Changed (SDD-plan)
+
+- SDD-plan.md reescrito con instrucciones paso a paso para cada tarea (B1–E4)
+- Incluye código de ejemplo, imports, mocks, assertions y comandos exactos
+- Diseñado para ser ejecutable por cualquier agente de código sin contexto previo
+
 ---
 
 ## [3.1.0] - 2026-06-20
