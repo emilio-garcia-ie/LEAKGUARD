@@ -16,6 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Tabla API REST completa y roadmap por fases
 - Corregidas afirmaciones incorrectas (K-Anonymity, Tor, OTX, WebSockets marcados como roadmap)
 
+### Changed (SDD-plan)
+
+- SDD-plan.md reescrito como backlog de evolución (Fases B–E)
+- Brechas conocidas, tareas accionables con archivos y criterios de aceptación
+- Plan de alineación marcado como completado
+
 ---
 
 ## [3.0.0] - 2026-06-20
