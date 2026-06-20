@@ -2,7 +2,7 @@
 
 [![Security Shield](https://img.shields.io/badge/Security-Aegis%20Guardrails-red?style=for-the-badge&logo=shieldsdotio)](https://github.com)
 [![OSINT Audit](https://img.shields.io/badge/OSINT-Audit%20RealTime-blue?style=for-the-badge&logo=spy)](https://github.com)
-[![AI Power](https://img.shields.io/badge/AI-Gemini%202.5-orange?style=for-the-badge&logo=google-gemini)](https://github.com)
+[![AI Engine](https://img.shields.io/badge/AI-Cognitive%20Core-orange?style=for-the-badge&logo=cpu)](https://github.com)
 
 Bienvenido al centro de documentación de **Aegis Hub**, una plataforma avanzada de ciberseguridad y auditoría en tiempo real impulsada por Inteligencia Artificial. Este sistema combina detección proactiva de filtraciones de datos con una barrera defensiva de última generación frente a ataques de manipulación de modelos de lenguaje (LLM).
 
@@ -10,7 +10,7 @@ Bienvenido al centro de documentación de **Aegis Hub**, una plataforma avanzada
 
 ## 🔍 1. Auditoría OSINT en Tiempo Real
 
-El sistema implementa una **Auditoría OSINT en Tiempo Real** mediante la integración directa y segura de la API de **LeakOSINT** (con la clave de consulta y cabeceras de navegación completamente sanitizadas).
+El sistema implementa una **Auditoría OSINT en Tiempo Real** mediante la integración directa y segura de una pasarela de auditoría de brechas externa (con la clave de consulta y cabeceras de navegación completamente sanitizadas).
 
 ```mermaid
 graph TD
@@ -20,9 +20,9 @@ graph TD
     D --> E{¿Filtro Gubernamental?}
     E -->|ON - Protección Activa| F["🚫 Bloqueo: [DATA PROTECTED - GOVERNMENT REGULATION]"]
     F --> G["Log en Terminal de Auditoría: Acceso Denegado (Verde)"]
-    E -->|OFF - Modo Expuesto| H[Consulta API LeakOSINT]
+    E -->|OFF - Modo Expuesto| H[Consulta Pasarela de Brechas OSINT]
     H --> I[Obtención de Bases de Datos Comprometidas]
-    I --> J[Inyección Dinámica de Contexto en Gemini 2.5]
+    I --> J[Inyección Dinámica de Contexto en LLM Core]
     J --> K[Generación de Advertencia Detallada y Personalizada]
 ```
 
@@ -33,8 +33,8 @@ graph TD
    * **`Interruptor ON` (Protección Activa):** Si la protección está activada desde el panel de control de la landing page, cualquier intento de buscar información sobre dominios gubernamentales o del sector salud (terminados en `.gov`, `.gob` o que contengan `.minsalud`) es interceptado inmediatamente a nivel de servidor. La API externa **no es consultada** y el bot responde con un aviso de bloqueo de seguridad gubernamental: 
      `[DATA PROTECTED - GOVERNMENT & CRITICAL DOMAIN REGULATION]`
      Al mismo tiempo, la terminal de auditoría de la web registra un log de acceso denegado en color **verde**.
-   * **`Interruptor OFF` (Modo Expuesto):** Si el usuario desactiva el interruptor, el backend realiza la consulta real a la API de LeakOSINT, obtiene las bases de datos comprometidas (ej. combos de contraseñas, dumps públicos) y las pasa de forma dinámica al modelo **Gemini 2.5** para que formule una advertencia detallada y personalizada sobre las vulnerabilidades encontradas.
-3. **Integración Dinámica con Gemini:** A diferencia de los sistemas tradicionales, la IA no responde con datos genéricos; el backend inyecta los resultados en vivo de la base de datos de filtraciones directamente en el contexto del sistema.
+   * **`Interruptor OFF` (Modo Expuesto):** Si el usuario desactiva el interruptor, el backend realiza la consulta real a la pasarela de auditoría de brechas, obtiene las bases de datos comprometidas (ej. combos de contraseñas, dumps públicos) y las pasa de forma dinámica al **motor cognitivo de IA** para que formule una advertencia detallada y personalizada sobre las vulnerabilidades encontradas.
+3. **Integración Dinámica con el Motor Cognitivo:** A diferencia de los sistemas tradicionales, la IA no responde con datos genéricos; el backend inyecta los resultados en vivo de la base de datos de filtraciones directamente en el contexto del sistema.
 
 ---
 
@@ -46,10 +46,10 @@ Para proteger al asistente de IA de ser manipulado, secuestrado cognitivamente o
 graph TD
     A[Consulta del Usuario] --> B[Escaneo Heurístico Aegis Guardrails]
     B --> C{¿Se detecta patrón de Inyección / Bypass?}
-    C -->|Sí - Ataque Detectado| D["🚫 Interceptación de la Petición (No llega a Gemini)"]
+    C -->|Sí - Ataque Detectado| D["🚫 Interceptación de la Petición (No llega al LLM)"]
     D --> E["💬 Respuesta: [PROMPT SHIELD DETECTED: Categoría]"]
     D --> F[🚨 Consola Admin: Registro de Alerta en Rojo Neón]
-    C -->|No - Seguro| G[Procesamiento en Gemini]
+    C -->|No - Seguro| G[Procesamiento en LLM Core]
 ```
 
 ### 🛡️ Características Principales:
@@ -59,7 +59,7 @@ graph TD
   * `system override` / `ignorar políticas`
   * `act as...` / impersonación de roles
   * Comandos destructivos (e.g., `delete database`, etc.)
-* **Interceptación de la Petición:** Si se detecta un vector de ataque, la consulta **nunca llega a Gemini**, previniendo que el modelo sea comprometido y ahorrando costos innecesarios de tokens de ejecución.
+* **Interceptación de la Petición:** Si se detecta un vector de ataque, la consulta **nunca llega al motor cognitivo principal**, previniendo que el modelo sea comprometido y ahorrando costos innecesarios de tokens de ejecución.
 * **Mitigación y Alerta:**
   * **Chatbot:** Responde instantáneamente con el mensaje de bloqueo: `[PROMPT SHIELD DETECTED: <Categoría>] Petición bloqueada automáticamente por Aegis Dynamic Guardrails.`
   * **Consola de Administración:** La interfaz de administración (consola de la landing page) registra una alerta en color **rojo neón** con el detalle del vector de ataque detectado, permitiendo a los operadores de seguridad analizar el incidente en tiempo real.
