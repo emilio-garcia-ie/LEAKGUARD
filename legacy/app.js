@@ -530,6 +530,21 @@ let notifications = [
   { id: 3, text: "Exposure check completed for acme.corp", time: "3h ago", unread: false }
 ];
 
+const CONSULTED_SCANS_KEY = 'leakguard_consulted_scans';
+
+const darkWebForumLeaks = [
+  { date: '2026-06-20', forum: 'BreachForums v2', title: 'Combo List LATAM Gov Emails', victim: 'Sector público BO/PE', severity: 'Critical', indicator: '420K credenciales · emails @gob.*' },
+  { date: '2026-06-19', forum: 'XSS.is (Tor)', title: 'Stealer Logs Batch #8812', victim: 'Multiples corporativos', severity: 'Critical', indicator: 'Cookies + wallets + RDP' },
+  { date: '2026-06-19', forum: 'Exploit.in', title: 'VPN Access Tokens Dump', victim: 'Proveedor telecom regional', severity: 'High', indicator: 'Tokens OpenVPN censurados' },
+  { date: '2026-06-18', forum: 'RaidForums Mirror', title: 'Database SQL — E-commerce', victim: 'Retail SA', severity: 'High', indicator: '1.2M registros · tarjetas parciales' },
+  { date: '2026-06-18', forum: 'LeakBase Paste', title: 'Admin panels .gov.bo', victim: 'Instituciones BO', severity: 'Critical', indicator: 'URLs panel + user:pass ocultos' },
+  { date: '2026-06-17', forum: 'Bhinneka Underground', title: 'Corporate Mail Access', victim: 'Dominio energía', severity: 'High', indicator: 'Webmail IMAP dumps' },
+  { date: '2026-06-17', forum: 'DarkNet Market #14', title: 'Employee Directory Leak', victim: 'Logística internacional', severity: 'Medium', indicator: 'Nombres + tel + correo interno' },
+  { date: '2026-06-16', forum: 'LockBit Blog (Onion)', title: 'Full AD Dump — Healthcare', victim: 'Medix Healthcare Group', severity: 'Critical', indicator: 'NTLM hashes · 248GB' },
+  { date: '2026-06-16', forum: 'Telegram Exfil Channel', title: 'GitHub Token Harvest', victim: 'Fintech UK', severity: 'High', indicator: 'AWS + Stripe keys expuestas' },
+  { date: '2026-06-15', forum: 'Altenen Network', title: 'Banking Portal Credentials', victim: 'BancGlobal SG', severity: 'Critical', indicator: 'SWIFT gateway configs' }
+];
+
 // 4. Chart References (for destruction on updates)
 let chartInstances = {};
 
@@ -810,11 +825,103 @@ function renderDashboard() {
   // Force chart update
   updateCharts();
   loadRecentBreachesWidget();
+  renderConsultedLeaksPanel();
+  renderDarkWebForumPanel();
+}
+
+function getConsultedScans() {
+  try {
+    const raw = localStorage.getItem(CONSULTED_SCANS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveConsultedScan(entry) {
+  const scans = getConsultedScans().filter(s => s.query !== entry.query);
+  scans.unshift(entry);
+  localStorage.setItem(CONSULTED_SCANS_KEY, JSON.stringify(scans.slice(0, 25)));
+}
+
+function formatScanTimestamp(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: '2-digit' }) +
+    ' ' + d.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+}
+
+function renderConsultedLeaksPanel() {
+  const tbody = document.getElementById('consulted-leaks-tbody');
+  const badge = document.getElementById('consulted-leaks-count');
+  if (!tbody) return;
+
+  const scans = getConsultedScans();
+  if (badge) badge.innerText = `${scans.length} consulta(s)`;
+
+  if (!scans.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="px-3 py-6 text-center text-slate-500">
+          Sin consultas aún. Usa <span class="text-cyan-400 cursor-pointer" onclick="navigateTo('exposure-check')">Exposure Check</span> para indexar filtraciones.
+        </td>
+      </tr>`;
+    return;
+  }
+
+  tbody.innerHTML = '';
+  scans.forEach(scan => {
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-slate-900/50 cursor-pointer border-b border-slate-800/30';
+    const riskColor = scan.riskScore >= 80 ? 'text-red-400' : scan.riskScore >= 50 ? 'text-orange-400' : 'text-green-400';
+    const displayQuery = scan.query.includes('@') ? censorEmail(scan.query) : scan.query;
+    tr.innerHTML = `
+      <td class="px-3 py-2 font-mono text-slate-500 whitespace-nowrap">${formatScanTimestamp(scan.timestamp)}</td>
+      <td class="px-3 py-2 text-slate-200 font-medium truncate max-w-[140px]" title="${scan.query}">${displayQuery}</td>
+      <td class="px-3 py-2 text-center font-bold font-mono ${riskColor}">${scan.riskScore}%</td>
+      <td class="px-3 py-2 text-center text-slate-400 font-mono">${scan.totalLogins}</td>`;
+    tr.addEventListener('click', () => {
+      navigateTo('exposure-check');
+      setTimeout(() => {
+        const input = document.getElementById('exposure-domain-input');
+        if (input) input.value = scan.query;
+        if (scan.searchType === 'Correo Electrónico (Email)') setExposureSearchMode('email');
+        else if (scan.searchType === 'Número Telefónico') setExposureSearchMode('phone');
+        else setExposureSearchMode('domain');
+      }, 200);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function renderDarkWebForumPanel() {
+  const tbody = document.getElementById('darkweb-forum-tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+  darkWebForumLeaks.forEach(item => {
+    const sevClass = item.severity === 'Critical' ? 'text-red-400' : item.severity === 'High' ? 'text-orange-400' : 'text-yellow-500';
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-red-950/10 border-b border-slate-800/30';
+    tr.innerHTML = `
+      <td class="px-3 py-2 font-mono text-slate-500 whitespace-nowrap">${item.date}</td>
+      <td class="px-3 py-2">
+        <span class="text-red-300/90 font-semibold block">${item.forum}</span>
+        <span class="text-[10px] text-slate-500">${item.indicator}</span>
+      </td>
+      <td class="px-3 py-2 text-slate-300">
+        <span class="font-medium block">${item.title}</span>
+        <span class="text-[10px] text-slate-500">${item.victim}</span>
+      </td>
+      <td class="px-3 py-2 text-center font-bold ${sevClass} whitespace-nowrap">${item.severity}</td>`;
+    tbody.appendChild(tr);
+  });
 }
 
 async function loadRecentBreachesWidget() {
   const data = await fetchRecentBreaches();
   renderRecentBreachesPanel(data);
+  renderConsultedLeaksPanel();
+  renderDarkWebForumPanel();
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
@@ -1901,6 +2008,16 @@ async function runExposureCheck() {
   resultsCard.classList.remove('hidden');
   resultsCard.classList.add('page-fade-in');
   renderExposureChart(risk.score);
+
+  saveConsultedScan({
+    query: domainInput,
+    searchType,
+    riskScore: risk.score,
+    totalLogins,
+    databases: stats.databasesWithHits ?? 0,
+    recordsShown: records.length,
+    timestamp: new Date().toISOString()
+  });
 
   scanBtn.disabled = false;
   scanBtn.classList.remove('opacity-60', 'cursor-not-allowed');

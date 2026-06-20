@@ -7,7 +7,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
-const PORT = process.env.PORT || 8787;
+const PORT = process.env.PORT || 1337;
 const UPSTREAM = 'https://leakosintapi.com/';
 
 app.use(express.json({ limit: '32kb' }));

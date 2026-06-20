@@ -536,6 +536,57 @@
             </div>
           </div>
 
+          <!-- Consulted leaks & Dark web forum intel -->
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass-card p-5 rounded-xl border border-slate-800/60">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                  <i data-lucide="history" class="w-4 h-4 text-cyan-400"></i>
+                  Filtraciones Consultadas
+                </h3>
+                <span id="consulted-leaks-count" class="text-[10px] font-mono text-cyan-400 border border-cyan-900/50 px-2 py-0.5 rounded bg-cyan-950/30">0 consultas</span>
+              </div>
+              <p class="text-[10px] text-slate-500 mb-3">Historial de búsquedas OSINT realizadas en Exposure Check.</p>
+              <div class="overflow-x-auto max-h-56 overflow-y-auto">
+                <table class="min-w-full text-xs">
+                  <thead class="bg-slate-900/40 sticky top-0">
+                    <tr class="text-[10px] text-slate-400 uppercase">
+                      <th class="px-3 py-2 text-left">Fecha</th>
+                      <th class="px-3 py-2 text-left">Consulta</th>
+                      <th class="px-3 py-2 text-center">Riesgo</th>
+                      <th class="px-3 py-2 text-center">Hallazgos</th>
+                    </tr>
+                  </thead>
+                  <tbody id="consulted-leaks-tbody" class="divide-y divide-slate-800/30"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="glass-card p-5 rounded-xl border border-slate-800/60 border-red-900/20">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                  <i data-lucide="skull" class="w-4 h-4 text-red-400"></i>
+                  Filtraciones Dark Web / Foros
+                </h3>
+                <span class="text-[10px] font-mono text-red-400 border border-red-900/50 px-2 py-0.5 rounded bg-red-950/30 animate-pulse">LIVE FEED</span>
+              </div>
+              <p class="text-[10px] text-slate-500 mb-3">Monitoreo de dumps en foros clandestinos, paste sites y blogs onion.</p>
+              <div class="overflow-x-auto max-h-56 overflow-y-auto">
+                <table class="min-w-full text-xs">
+                  <thead class="bg-slate-900/40 sticky top-0">
+                    <tr class="text-[10px] text-slate-400 uppercase">
+                      <th class="px-3 py-2 text-left">Fecha</th>
+                      <th class="px-3 py-2 text-left">Foro / Fuente</th>
+                      <th class="px-3 py-2 text-left">Dump / Victima</th>
+                      <th class="px-3 py-2 text-center">Severidad</th>
+                    </tr>
+                  </thead>
+                  <tbody id="darkweb-forum-tbody" class="divide-y divide-slate-800/30"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
           <!-- Recent public breaches (XposedOrNot free OSINT) -->
           <div class="glass-card p-5 rounded-xl border border-slate-800/60">
             <div class="flex justify-between items-center mb-4">
