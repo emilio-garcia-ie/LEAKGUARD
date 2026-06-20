@@ -8,7 +8,7 @@ import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { ThreatMap } from "@/components/dashboard/threat-map";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, statusBadge } from "@/components/ui/badge";
-import { api, Threat, ConsultedScan, DarkWebItem, DashboardKpis, ChartData } from "@/lib/api";
+import { api, Threat, ConsultedScan, DarkWebItem, DashboardKpis, ChartData, CrackedLeak } from "@/lib/api";
 
 function Kpi({ label, value }: { label: string; value: number | string }) {
   return (
@@ -28,6 +28,7 @@ export default function DashboardPage() {
   const [consulted, setConsulted] = useState<ConsultedScan[]>([]);
   const [darkweb, setDarkweb] = useState<DarkWebItem[]>([]);
   const [recent, setRecent] = useState<Array<{ name: string; year: string; records?: string }>>([]);
+  const [cracked, setCracked] = useState<CrackedLeak[]>([]);
 
   useEffect(() => {
     Promise.all([
@@ -37,12 +38,14 @@ export default function DashboardPage() {
       api.consulted(),
       api.darkweb(),
       api.breachesRecent(),
-    ]).then(([k, c, t, cons, dw, br]) => {
+      api.crackedLeaks().catch(() => []),
+    ]).then(([k, c, t, cons, dw, br, cr]) => {
       setKpis(k);
       setCharts(c);
       setThreats(t);
       setConsulted(cons);
       setDarkweb(dw.items);
+      setCracked(cr);
       const list = Array.isArray(br.breaches) ? br.breaches : (br.breaches as { exposedBreaches?: unknown[] })?.exposedBreaches || [];
       setRecent(
         (list as Array<Record<string, unknown>>)
@@ -110,6 +113,51 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
+        <Card className="mt-6 overflow-x-auto">
+          <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardTitle className="text-lg font-bold flex items-center gap-2">
+              Live Monitor: Cracked.st Forum (Other Leaks)
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="w-full text-sm">
+              <thead className="text-slate-500 border-b border-slate-800">
+                <tr>
+                  {["Título de Hilo", "Autor", "Publicado", "Respuestas", "Vistas"].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left font-medium">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {!cracked.length && (
+                  <tr>
+                    <td colSpan={5} className="text-center py-6 text-slate-500">
+                      Cargando hilos recientes o sesión expirada...
+                    </td>
+                  </tr>
+                )}
+                {cracked.map((item, i) => (
+                  <tr key={i} className="border-b border-slate-800/50 hover:bg-slate-900/60">
+                    <td className="px-4 py-3 font-semibold text-cyan-400">
+                      <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        {item.title}
+                      </a>
+                    </td>
+                    <td className="px-4 py-3 text-slate-300 font-mono text-xs">{item.author}</td>
+                    <td className="px-4 py-3 text-slate-400 text-xs">{item.date}</td>
+                    <td className="px-4 py-3 font-mono text-center text-slate-400">{item.replies}</td>
+                    <td className="px-4 py-3 font-mono text-center text-slate-400">{item.views}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+
         <div className="grid lg:grid-cols-3 gap-4 mt-6">
           <Card>
             <CardHeader><CardTitle>Filtraciones consultadas</CardTitle></CardHeader>
@@ -117,7 +165,7 @@ export default function DashboardPage() {
               {!consulted.length && <p className="text-slate-500">Sin consultas aún.</p>}
               {consulted.map((s, i) => (
                 <div key={i} className="flex justify-between border-b border-slate-800/40 py-2">
-                  <span className="truncate">{s.query}</span>
+                  <span className="truncate">{s.searchType}</span>
                   <span className="font-mono text-cyan-400">{s.riskScore}%</span>
                 </div>
               ))}
