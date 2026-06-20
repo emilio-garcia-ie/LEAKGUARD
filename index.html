@@ -5,23 +5,25 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Aegis Cyber Security | Consultoría e Inteligencia de Amenazas</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        primary: "#00E5FF",
-                        secondary: "#00FF88",
-                        error: "#FF3B30",
-                        darkBg: "#080810",
-                        cardBg: "#12121E"
+                        primary: "#38bdf8", // Sky/Cyan
+                        secondary: "#818cf8", // Indigo Muted
+                        accent: "#0284c7",
+                        bgDark: "#050811", // Deep premium slate-black
+                        panelBg: "rgba(10, 15, 30, 0.6)",
+                        panelBorder: "rgba(56, 189, 248, 0.08)"
                     },
                     fontFamily: {
-                        headline: ["Montserrat", "sans-serif"],
-                        body: ["Inter", "sans-serif"]
+                        headline: ["Outfit", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"]
                     }
                 }
             }
@@ -32,132 +34,183 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
         }
-        .glow-cyan {
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+        
+        /* Premium Ambient Light Effect */
+        .ambient-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.03) 50%, transparent 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(80px);
+            z-index: -10;
         }
-        .glow-green {
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.25);
+
+        /* Glassmorphism custom panel styling */
+        .glass-panel {
+            background: rgba(13, 20, 38, 0.65);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(56, 189, 248, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
         }
-        .glow-cyan-border {
-            border-color: rgba(0, 229, 255, 0.4);
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+
+        .glass-panel:hover {
+            border-color: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 12px 40px 0 rgba(56, 189, 248, 0.08);
         }
-        .glass {
-            background: rgba(18, 18, 30, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+
+        /* Input styling with glassmorphism */
+        .glass-input {
+            background: rgba(5, 8, 17, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .pulse-emerald {
-            animation: pulse-em 2s infinite;
+        .glass-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+            background: rgba(5, 8, 17, 0.95);
         }
-        @keyframes pulse-em {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
+
+        /* Custom scrollbar to keep professional UI consistent */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(13, 20, 38, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.25);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.5);
+        }
+
+        /* Pulse animation for shield indicators */
+        .pulse-cyan {
+            animation: pulse-c 2s infinite;
+        }
+        @keyframes pulse-c {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+            50% { opacity: 0.6; box-shadow: 0 0 10px 4px rgba(56, 189, 248, 0.2); }
         }
     </style>
 </head>
-<body class="bg-darkBg text-neutral-200 font-body antialiased selection:bg-primary selection:text-black">
+<body class="bg-bgDark text-slate-100 font-body antialiased selection:bg-primary selection:text-black min-h-screen relative overflow-x-hidden">
+
+    <!-- Interactive Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-50 pointer-events-none opacity-40"></canvas>
+
+    <!-- Background Glows -->
+    <div class="ambient-glow top-1/4 left-1/4"></div>
+    <div class="ambient-glow top-2/3 right-1/4"></div>
 
     <!-- Header Navigation -->
-    <header class="fixed top-0 left-0 w-full z-40 bg-darkBg/90 border-b border-neutral-900 backdrop-blur-md">
+    <header class="fixed top-0 left-0 w-full z-40 bg-bgDark/80 border-b border-white/5 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">shield</span>
-                <span class="text-xl font-black tracking-tight text-white uppercase font-headline">Aegis Cyber Security</span>
+                <span class="text-xl font-bold tracking-tight text-white uppercase font-headline">Aegis Cyber Security</span>
             </div>
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold uppercase tracking-wider text-neutral-400">
-                <a href="#inicio" class="hover:text-primary transition-colors">Inicio</a>
-                <a href="#servicios" class="hover:text-primary transition-colors">Servicios</a>
-                <a href="#auditoria" class="hover:text-primary transition-colors">Auditoría RAG</a>
-                <a href="#contacto" class="hover:text-primary transition-colors">Contacto</a>
+            <nav class="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <a href="#inicio" class="hover:text-primary transition-colors duration-200">Inicio</a>
+                <a href="#servicios" class="hover:text-primary transition-colors duration-200">Servicios</a>
+                <a href="#dashboard" class="hover:text-primary transition-colors duration-200 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">dashboard</span> Dashboard SOC
+                </a>
+                <a href="#contacto" class="hover:text-primary transition-colors duration-200">Contacto</a>
             </nav>
-            <div>
-                <a href="#auditoria" class="bg-primary text-black font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded hover:opacity-90 active:scale-95 duration-150 transition-all inline-block glow-cyan">
-                    Solicitar Auditoría
+            <div class="flex items-center gap-4">
+                <span id="user-badge" class="hidden text-xs bg-primary/10 border border-primary/20 text-primary px-3 py-1.5 rounded font-mono"></span>
+                <a href="#dashboard" id="nav-cta" class="bg-gradient-to-r from-primary to-secondary text-black font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded hover:opacity-90 active:scale-95 duration-150 transition-all shadow-lg shadow-primary/25">
+                    Acceder SOC
                 </a>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section id="inicio" class="relative pt-36 pb-24 overflow-hidden">
-        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#00E5FF 1px, transparent 1px); background-size: 24px 24px;"></div>
-        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-12 items-center">
+    <section id="inicio" class="relative pt-44 pb-28 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-12 items-center relative z-10">
             <div class="md:col-span-7 space-y-6">
-                <div class="inline-flex items-center gap-2 px-3 py-1 border border-primary/20 bg-primary/5 rounded-full text-xs font-mono font-bold text-primary uppercase tracking-widest">
+                <div class="inline-flex items-center gap-2 px-3 py-1 border border-primary/20 bg-primary/5 rounded-full text-[10px] font-mono font-bold text-primary uppercase tracking-widest">
                     <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                    Seguridad Proactiva de Datos
+                    Seguridad Inteligente & Auditoría RAG
                 </div>
                 <h1 class="text-4xl md:text-6xl font-black font-headline text-white leading-tight tracking-tight">
-                    Protección Digital de <br/>
+                    Defensa Cibernética de <br/>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Siguiente Generación</span> <br/>
-                    para Empresas
+                    para su Infraestructura
                 </h1>
-                <p class="text-neutral-400 text-lg max-w-xl leading-relaxed">
-                    Aseguramos la integridad de tus bases de datos corporativas, flujos RAG y sistemas basados en Inteligencia Artificial frente a inyecciones de prompts indirectas y fugas reguladas.
+                <p class="text-slate-400 text-lg max-w-xl leading-relaxed">
+                    Aseguramos la integridad de sus bases de datos corporativas, flujos RAG y sistemas basados en Inteligencia Artificial frente a inyecciones de prompts indirectas y fugas reguladas.
                 </p>
                 <div class="flex gap-4 pt-4">
-                    <a href="#servicios" class="bg-primary text-black font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded hover:opacity-90 transition-all glow-cyan">
+                    <a href="#servicios" class="bg-gradient-to-r from-primary to-secondary text-black font-extrabold text-sm uppercase tracking-wider px-6 py-3.5 rounded hover:opacity-95 transition-all shadow-lg shadow-primary/25">
                         Explorar Servicios
                     </a>
-                    <a href="#auditoria" class="border border-secondary text-secondary font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded hover:bg-secondary/5 transition-all">
-                        Prueba el Shield
+                    <a href="#dashboard" class="border border-white/10 bg-white/5 text-slate-300 font-extrabold text-sm uppercase tracking-wider px-6 py-3.5 rounded hover:bg-white/10 transition-all">
+                        Consola SOC
                     </a>
                 </div>
             </div>
-            <div class="md:col-span-5 relative flex justify-center">
+            <div class="md:col-span-5 flex justify-center">
                 <!-- Abstract cyber graphic shield background -->
-                <div class="w-80 h-80 rounded-full border-2 border-primary/20 flex items-center justify-center relative glow-cyan">
-                    <div class="w-64 h-64 rounded-full border border-secondary/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[120px] text-primary/70 animate-pulse" style="font-variation-settings: 'FILL' 0; filter: drop-shadow(0 0 15px rgba(0,229,255,0.4));">verified_user</span>
+                <div class="w-80 h-80 rounded-full border border-primary/10 flex items-center justify-center relative shadow-2xl shadow-primary/5 bg-panelBg backdrop-blur-md">
+                    <div class="w-64 h-64 rounded-full border border-secondary/15 flex items-center justify-center relative">
+                        <span class="material-symbols-outlined text-[120px] text-primary/70 animate-pulse" style="font-variation-settings: 'FILL' 0; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.4));">verified_user</span>
                     </div>
-                    <div class="absolute -top-4 bg-darkBg border border-primary px-3 py-1 text-[9px] font-mono text-primary font-bold uppercase tracking-widest">AEGIS SHIELD ACTIVE</div>
+                    <div class="absolute -top-4 bg-bgDark border border-primary/30 px-3.5 py-1 text-[9px] font-mono text-primary font-bold uppercase tracking-widest rounded-full shadow-lg">AEGIS SHIELD ACTIVE</div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section id="servicios" class="py-20 border-t border-neutral-900 bg-cardBg/10">
+    <section id="servicios" class="py-24 border-t border-white/5 bg-[#080d1a]/30">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center space-y-3 mb-16">
+            <div class="text-center space-y-3 mb-20">
                 <h2 class="text-xs font-bold uppercase tracking-widest text-primary font-mono">SERVICIOS PROFESIONALES</h2>
-                <p class="text-3xl font-black font-headline text-white">Nuestra Solución de Ciberseguridad</p>
+                <p class="text-3xl md:text-4xl font-extrabold font-headline text-white">Nuestra Solución de Ciberseguridad</p>
             </div>
             <div class="grid md:grid-cols-4 gap-6">
-                <div class="bg-cardBg border border-neutral-800 p-6 rounded hover:border-primary/50 hover:glow-cyan transition-all duration-300 flex flex-col justify-between">
+                <div class="glass-panel p-8 rounded-2xl flex flex-col justify-between group">
                     <div>
-                        <span class="material-symbols-outlined text-primary text-4xl mb-4">settings_suggest</span>
-                        <h3 class="text-lg font-bold text-white mb-2 font-headline">Pruebas de Penetración</h3>
-                        <p class="text-neutral-400 text-sm leading-relaxed">
-                            Simulación de ciberataques éticos y controlados para descubrir vulnerabilidades en tu perímetro y redes antes que los atacantes.
+                        <span class="material-symbols-outlined text-primary text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">settings_suggest</span>
+                        <h3 class="text-xl font-bold text-white mb-3 font-headline">Pruebas de Penetración</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Simulación de ciberataques éticos y controlados para descubrir vulnerabilidades en su perímetro y redes antes de que lo hagan los atacantes.
                         </p>
                     </div>
                 </div>
-                <div class="bg-cardBg border border-neutral-800 p-6 rounded hover:border-primary/50 hover:glow-cyan transition-all duration-300 flex flex-col justify-between">
+                <div class="glass-panel p-8 rounded-2xl flex flex-col justify-between group">
                     <div>
-                        <span class="material-symbols-outlined text-primary text-4xl mb-4">database</span>
-                        <h3 class="text-lg font-bold text-white mb-2 font-headline">Auditoría Cloud & RAG</h3>
-                        <p class="text-neutral-400 text-sm leading-relaxed">
-                            Evaluamos las fugas de información y la privacidad en bases vectoriales de búsqueda RAG e infraestructura en la nube.
+                        <span class="material-symbols-outlined text-primary text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">database</span>
+                        <h3 class="text-xl font-bold text-white mb-3 font-headline">Auditoría Cloud & RAG</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Evaluamos las fugas de información y la privacidad en bases vectoriales de búsqueda RAG e infraestructura crítica en la nube.
                         </p>
                     </div>
                 </div>
-                <div class="bg-cardBg border border-neutral-800 p-6 rounded hover:border-primary/50 hover:glow-cyan transition-all duration-300 flex flex-col justify-between">
+                <div class="glass-panel p-8 rounded-2xl flex flex-col justify-between group">
                     <div>
-                        <span class="material-symbols-outlined text-primary text-4xl mb-4">troubleshoot</span>
-                        <h3 class="text-lg font-bold text-white mb-2 font-headline">Monitoreo OSINT</h3>
-                        <p class="text-neutral-400 text-sm leading-relaxed">
-                            Búsqueda y monitoreo activo de credenciales corporativas y datos privados expuestos en repositorios públicos de internet.
+                        <span class="material-symbols-outlined text-primary text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">troubleshoot</span>
+                        <h3 class="text-xl font-bold text-white mb-3 font-headline">Monitoreo OSINT</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Búsqueda y monitoreo activo de credenciales corporativas y datos privados expuestos en repositorios públicos y foros cibernéticos de internet.
                         </p>
                     </div>
                 </div>
-                <div class="bg-cardBg border border-neutral-800 p-6 rounded hover:border-primary/50 hover:glow-cyan transition-all duration-300 flex flex-col justify-between">
+                <div class="glass-panel p-8 rounded-2xl flex flex-col justify-between group">
                     <div>
-                        <span class="material-symbols-outlined text-primary text-4xl mb-4">psychology</span>
-                        <h3 class="text-lg font-bold text-white mb-2 font-headline">Seguridad de IA</h3>
-                        <p class="text-neutral-400 text-sm leading-relaxed">
-                            Defensa perimetral contra inyecciones de prompts adversarios y manipulación del sistema cognitivo en modelos de lenguaje.
+                        <span class="material-symbols-outlined text-primary text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">psychology</span>
+                        <h3 class="text-xl font-bold text-white mb-3 font-headline">Seguridad de IA</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Defensa perimetral contra inyecciones de prompts adversarios y manipulación del sistema cognitivo en modelos de lenguaje comerciales y locales.
                         </p>
                     </div>
                 </div>
@@ -165,65 +218,136 @@
         </div>
     </section>
 
-    <!-- Database Monitor Status Section (Audit Panel) -->
-    <section id="auditoria" class="py-20 border-t border-neutral-900 relative">
+    <!-- Dashboard & Authentication Section -->
+    <section id="dashboard" class="py-24 border-t border-white/5 relative">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid md:grid-cols-12 gap-12 items-center">
-                <div class="md:col-span-5 space-y-6">
-                    <h2 class="text-xs font-bold uppercase tracking-widest text-secondary font-mono">INTEGRACIÓN Y AUDITORÍA</h2>
-                    <h3 class="text-3xl font-black font-headline text-white">RAG Database Guard & Monitoreo</h3>
-                    <p class="text-neutral-400 leading-relaxed">
-                        Nuestra tecnología auditadora filtra en tiempo real las consultas que realicen tus clientes de IA. El sistema detecta y mitiga de forma automática ataques dirigidos de inyección de prompt.
-                    </p>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-secondary">verified</span>
-                            <span class="text-neutral-300 text-sm">Protección de Datos Georreferenciada (.bo)</span>
+            <div class="text-center space-y-3 mb-16">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-secondary font-mono">INTEGRACIÓN Y CONTROL DE ACCESO</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold font-headline text-white">Consola de Operaciones de Seguridad (SOC)</h3>
+                <p class="text-slate-400 max-w-2xl mx-auto text-sm">
+                    Inicie sesión o regístrese para visualizar el estado en tiempo real del nodo de seguridad RAG, administrar filtros y auditar intentos de búsqueda prohibidos.
+                </p>
+            </div>
+
+            <!-- Auth Form Container (Shown when NOT logged in) -->
+            <div id="auth-container" class="max-w-md mx-auto glass-panel p-8 rounded-2xl relative overflow-hidden transition-all duration-300">
+                <div class="flex justify-center gap-6 mb-8 border-b border-white/5 pb-4">
+                    <button onclick="switchAuthTab('login')" id="tab-login" class="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-2 px-2 transition-all">Iniciar Sesión</button>
+                    <button onclick="switchAuthTab('register')" id="tab-register" class="text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-white pb-2 px-2 transition-all">Registrarse</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Usuario</label>
+                        <input type="text" id="login-username" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-0" required placeholder="Ingrese su usuario..."/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Contraseña</label>
+                        <input type="password" id="login-password" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-0" required placeholder="Ingrese su contraseña..."/>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-primary to-secondary text-black font-extrabold text-xs uppercase tracking-wider py-3.5 rounded-lg hover:opacity-90 active:scale-95 duration-150 transition-all shadow-lg shadow-primary/25">
+                        Iniciar Sesión
+                    </button>
+                    <div id="login-error" class="hidden text-xs text-error font-medium text-center bg-error/10 border border-error/20 p-2.5 rounded"></div>
+                </form>
+
+                <!-- Register Form (Hidden initially) -->
+                <form id="register-form" onsubmit="handleRegister(event)" class="hidden space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Nuevo Usuario</label>
+                        <input type="text" id="register-username" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-0" required placeholder="Ej. analista_aegis..."/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Contraseña</label>
+                        <input type="password" id="register-password" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-0" required placeholder="Contraseña segura..."/>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-secondary to-primary text-black font-extrabold text-xs uppercase tracking-wider py-3.5 rounded-lg hover:opacity-90 active:scale-95 duration-150 transition-all shadow-lg shadow-secondary/25">
+                        Registrar Cuenta
+                    </button>
+                    <div id="register-message" class="hidden text-xs font-medium text-center p-2.5 rounded"></div>
+                </form>
+            </div>
+
+            <!-- SOC Dashboard Panel (Shown only when LOGGED IN) -->
+            <div id="soc-dashboard" class="hidden grid md:grid-cols-12 gap-8 transition-all duration-300">
+                <!-- Left Control / Stats Panel (Col Span 4) -->
+                <div class="md:col-span-4 space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                            <span class="material-symbols-outlined text-[100px]">dns</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-secondary">verified</span>
-                            <span class="text-neutral-300 text-sm">Scrubber dinámico de Prompts maliciosos</span>
+                        <div class="border-b border-white/5 pb-4 mb-6">
+                            <span class="text-[10px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 font-bold rounded-full uppercase tracking-wider inline-flex items-center gap-1.5 font-mono mb-3">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                                PROMPT SHIELD: ACTIVE
+                            </span>
+                            <h4 class="text-lg font-bold text-white font-headline uppercase tracking-wider">RAG Database Security Status</h4>
+                            <p class="text-[10px] text-slate-500 font-mono mt-1">SYSTEM ID: SEC-NODE-RAG-01</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-secondary">verified</span>
-                            <span class="text-neutral-300 text-sm">Cumplimiento regulatorio e informes automatizados</span>
+                        
+                        <!-- Configuration and Interactive Toggles -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center bg-[#050811]/60 border border-white/5 p-4 rounded-xl">
+                                <div>
+                                    <p class="text-xs font-bold text-white leading-tight font-headline">Filtro Dominios .bo (Protección)</p>
+                                    <p class="text-[9px] text-slate-500 font-mono mt-0.5">Bloquea exfiltración de registros con extensión de Bolivia</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span id="shield-status-text" class="text-xs font-bold font-mono text-emerald-400">PROTEGIDO</span>
+                                    <button onclick="toggleProtection()" id="toggle-btn" class="w-12 h-6 bg-emerald-500 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center justify-end">
+                                        <span class="w-4 h-4 bg-black rounded-full shadow-md"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button onclick="handleLogout()" class="w-full border border-white/10 hover:border-error/30 hover:bg-error/5 text-slate-400 hover:text-error text-xs font-bold uppercase tracking-wider py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">logout</span> Cerrar Sesión SOC
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div class="md:col-span-7 bg-cardBg border border-neutral-800 p-8 rounded relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                        <span class="material-symbols-outlined text-9xl">dns</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-6 border-b border-neutral-800 pb-4">
-                        <div>
-                            <h4 class="text-headline-sm font-bold text-white text-md font-headline uppercase tracking-wider">RAG Database Security Status</h4>
-                            <p class="text-[10px] text-neutral-500 font-mono">SYSTEM ID: SEC-NODE-RAG-01</p>
-                        </div>
-                        <span class="text-[10px] bg-secondary/10 border border-secondary/30 text-secondary px-3 py-1 font-bold rounded uppercase tracking-wider flex items-center gap-1.5 font-mono">
-                            <span class="w-1.5 h-1.5 rounded-full bg-secondary pulse-emerald"></span>
-                            PROMPT SHIELD: ACTIVE
-                        </span>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <!-- Protection Toggle -->
-                        <div class="flex justify-between items-center bg-darkBg border border-neutral-800 p-4 rounded">
-                            <div>
-                                <p class="text-xs font-bold text-white leading-tight font-headline">Filtro Dominios .bo (Protección)</p>
-                                <p class="text-[10px] text-neutral-500 font-mono">Bloquea exfiltración de registros con extensión de Bolivia</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span id="shield-status-text" class="text-xs font-bold font-mono text-emerald-500">PROTEGIDO (ON)</span>
-                                <button onclick="toggleProtection()" id="toggle-btn" class="w-12 h-6 bg-emerald-500 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center justify-end">
-                                    <span class="w-4 h-4 bg-black rounded-full shadow-md"></span>
-                                </button>
-                            </div>
-                        </div>
 
-                        <!-- Mini Logs Output -->
-                        <div class="bg-darkBg border border-neutral-900 rounded p-4 font-mono text-xs h-40 overflow-y-auto" id="mini-log-terminal">
-                            <div class="text-neutral-500">[14:22:01] LeakGuard: Base de datos RAG enlazada.</div>
-                            <div class="text-neutral-500">[14:22:02] LeakGuard: Auditoría en tiempo real activa.</div>
+                <!-- Right Logs / Forbidden Attempts Panel (Col Span 8) -->
+                <div class="md:col-span-8 space-y-6">
+                    <!-- Forbidden Attempts Table -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-3">
+                            <h4 class="text-sm font-bold text-white uppercase tracking-wider font-headline flex items-center gap-2">
+                                <span class="material-symbols-outlined text-error">gavel</span>
+                                Intentos de Búsqueda Prohibidos (Gubernamentales)
+                            </h4>
+                            <span class="text-[10px] bg-error/10 border border-error/30 text-error px-2.5 py-0.5 rounded font-mono font-bold uppercase">RESTRICCIÓN ACTIVA</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left text-slate-400">
+                                <thead class="text-[10px] text-slate-500 uppercase font-mono tracking-wider border-b border-white/5">
+                                    <tr>
+                                        <th scope="col" class="py-2">Usuario</th>
+                                        <th scope="col" class="py-2">Consulta Bloqueada</th>
+                                        <th scope="col" class="py-2 text-right">Fecha/Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="forbidden-attempts-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SOC Live Log terminal -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-sm font-bold text-white uppercase tracking-wider font-headline flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">terminal</span>
+                                Registro de Actividades del Sistema SOC
+                            </h4>
+                            <button onclick="refreshDashboard()" class="text-slate-500 hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">refresh</span>
+                            </button>
+                        </div>
+                        <div class="bg-[#050811] border border-white/5 rounded-xl p-4 font-mono text-xs h-48 overflow-y-auto" id="mini-log-terminal">
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
                 </div>
@@ -231,29 +355,29 @@
         </div>
     </section>
 
-    <!-- Contact Section / Footer -->
-    <footer id="contacto" class="border-t border-neutral-900 bg-black/40 py-16 text-neutral-500 text-sm">
+    <!-- Footer -->
+    <footer id="contacto" class="border-t border-white/5 bg-[#03050b]/90 py-16 text-slate-500 text-sm relative z-10">
         <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
             <div class="space-y-4">
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">shield</span>
                     <span class="text-md font-black tracking-tight text-white uppercase font-headline">Aegis Security</span>
                 </div>
-                <p class="text-xs text-neutral-600 leading-relaxed">
+                <p class="text-xs text-slate-500 leading-relaxed">
                     Consultoría estratégica de ciberseguridad industrial y auditoría inteligente para sistemas RAG e Inteligencia Artificial en toda la región.
                 </p>
             </div>
             <div>
-                <h4 class="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 font-headline">Servicios</h4>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 font-headline">Servicios</h4>
                 <ul class="space-y-2 text-xs">
                     <li><a href="#servicios" class="hover:text-primary transition-colors">Pruebas de Penetración</a></li>
-                    <li><a href="#auditoria" class="hover:text-primary transition-colors">Auditoría Cloud & RAG</a></li>
+                    <li><a href="#servicios" class="hover:text-primary transition-colors">Auditoría Cloud & RAG</a></li>
                     <li><a href="#servicios" class="hover:text-primary transition-colors">Búsqueda OSINT</a></li>
                     <li><a href="#servicios" class="hover:text-primary transition-colors">Alineación de Modelos</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 font-headline">Leyes Vigiladas</h4>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 font-headline">Leyes Vigiladas</h4>
                 <ul class="space-y-2 text-xs">
                     <li><a href="#" class="hover:text-primary transition-colors">LGPD (Brasil)</a></li>
                     <li><a href="#" class="hover:text-primary transition-colors">Ley Federal (México)</a></li>
@@ -262,7 +386,7 @@
                 </ul>
             </div>
             <div>
-                <h4 class="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4 font-headline">Contacto</h4>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 font-headline">Contacto</h4>
                 <p class="text-xs leading-relaxed">
                     Soporte Técnico: support@aegis.com<br/>
                     Consultas: info@aegis.com<br/>
@@ -270,7 +394,7 @@
                 </p>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto px-6 border-t border-neutral-900/60 mt-12 pt-6 text-center text-[10px] text-neutral-700">
+        <div class="max-w-7xl mx-auto px-6 border-t border-white/5 mt-12 pt-6 text-center text-[10px] text-slate-700">
             © 2026 Aegis Cyber Security Services. Todos los derechos reservados.
         </div>
     </footer>
@@ -278,23 +402,23 @@
     <!-- Floating Chatbot Assistant Widget -->
     <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
         <!-- Chatbot Bubble Trigger -->
-        <button onclick="toggleChatWindow()" id="chat-trigger" class="w-14 h-14 bg-primary text-black rounded-full flex items-center justify-center shadow-2xl glow-cyan hover:scale-105 active:scale-95 duration-200 transition-all">
+        <button onclick="toggleChatWindow()" id="chat-trigger" class="w-14 h-14 bg-gradient-to-r from-primary to-secondary text-black rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 duration-200 transition-all">
             <span class="material-symbols-outlined text-2xl font-bold">chat</span>
         </button>
 
         <!-- Chat Window (Glassmorphism) -->
-        <div id="chat-window" class="hidden w-96 h-[460px] glass rounded-lg shadow-2xl flex-col overflow-hidden mb-4 transition-all duration-300 border border-primary/20">
+        <div id="chat-window" class="hidden w-96 h-[480px] glass-panel rounded-2xl shadow-2xl flex-col overflow-hidden mb-4 transition-all duration-300">
             <!-- Chat Header -->
-            <div class="bg-cardBg border-b border-neutral-800 p-4 flex justify-between items-center">
+            <div class="bg-slate-950/80 border-b border-white/5 p-4 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary text-md">smart_toy</span>
+                    <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-md">smart_toy</span>
                     </div>
                     <div>
                         <h4 class="text-xs font-bold text-white leading-tight font-headline">AegisAI - Asistente</h4>
                         <div class="flex items-center gap-1.5 mt-0.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-                            <span class="text-[9px] font-mono text-neutral-500 uppercase">Online Agent</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="text-[9px] font-mono text-slate-500 uppercase">Agente Activo</span>
                         </div>
                     </div>
                 </div>
@@ -304,22 +428,22 @@
             </div>
 
             <!-- Message Area -->
-            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs leading-relaxed">
-                <!-- System/Bot welcome -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs leading-relaxed bg-[#050811]/40">
+                <!-- Welcome -->
                 <div class="flex items-start gap-2.5">
-                    <div class="w-6 h-6 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center flex-shrink-0 text-primary">
+                    <div class="w-6 h-6 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center flex-shrink-0 text-primary">
                         <span class="material-symbols-outlined text-[14px]">smart_toy</span>
                     </div>
-                    <div class="bg-neutral-900 border border-neutral-800 p-3 rounded-lg text-neutral-300 max-w-[80%]">
-                        Hola, soy el asistente táctico de Aegis. Puedo responder tus consultas de ciberseguridad o buscar si tu dirección de email está expuesta en filtraciones mediante nuestra base OSINT.
+                    <div class="bg-slate-900/60 border border-white/5 p-3 rounded-lg text-slate-300 max-w-[85%]">
+                        Hola, soy el asistente táctico de Aegis. Puedo responder sus consultas de ciberseguridad o auditar si su dirección de correo está expuesta en filtraciones mediante nuestra base OSINT. (Nota: Se requiere iniciar sesión en el SOC para auditar filtraciones).
                     </div>
                 </div>
             </div>
 
             <!-- Input Box -->
-            <div class="bg-cardBg border-t border-neutral-800 p-3 flex gap-2">
-                <input type="text" id="chat-input" class="flex-1 bg-darkBg border border-neutral-800 text-xs px-3 py-2 rounded focus:outline-none focus:border-primary text-neutral-200" placeholder="Escribe tu consulta o email a auditar..." onkeydown="handleInputKey(event)"/>
-                <button onclick="sendMessage()" class="bg-primary text-black px-4 rounded font-bold text-xs hover:opacity-90 active:scale-95 duration-150 transition-all flex items-center justify-center">
+            <div class="bg-slate-950/80 border-t border-white/5 p-3 flex gap-2">
+                <input type="text" id="chat-input" class="flex-1 bg-[#050811] border border-white/5 text-xs px-3 py-2 rounded focus:outline-none focus:border-primary text-slate-200" placeholder="Consulte o ingrese email a auditar..." onkeydown="handleInputKey(event)"/>
+                <button onclick="sendMessage()" class="bg-gradient-to-r from-primary to-secondary text-black px-4 rounded font-bold text-xs hover:opacity-90 active:scale-95 duration-150 transition-all flex items-center justify-center">
                     Enviar
                 </button>
             </div>
@@ -328,33 +452,286 @@
 
     <!-- Client-side Logic -->
     <script>
+        // Session and state variables
         let protectionEnabled = true;
+        let activeAuthTab = 'login';
+        let userToken = localStorage.getItem('aegis_token') || null;
+        let currentUsername = localStorage.getItem('aegis_username') || null;
 
-        // Toggle Protection Switch
+        // Secure password hashing function using Web Crypto API (SHA-256)
+        // This ensures plain-text passwords never leave the DOM in cleartext.
+        async function secureHash(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Initialize UI states
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+            if (userToken) {
+                refreshDashboard();
+            }
+        });
+
+        // Toggle Protection switch
         function toggleProtection() {
+            if (!userToken) return;
             protectionEnabled = !protectionEnabled;
+            
+            fetch('/dashboard/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token: userToken,
+                    protection: protectionEnabled
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    updateShieldUI(data.bo_protection);
+                    refreshDashboard();
+                }
+            })
+            .catch(err => console.error("Toggle error:", err));
+        }
+
+        function updateShieldUI(enabled) {
+            protectionEnabled = enabled;
             const btn = document.getElementById('toggle-btn');
             const text = document.getElementById('shield-status-text');
-            const terminal = document.getElementById('mini-log-terminal');
             
-            const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
-            const div = document.createElement('div');
-            div.className = "text-neutral-400";
-
-            if (protectionEnabled) {
+            if (enabled) {
                 btn.className = "w-12 h-6 bg-emerald-500 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center justify-end";
-                text.innerText = "PROTEGIDO (ON)";
-                text.className = "text-xs font-bold font-mono text-emerald-500";
-                div.innerHTML = `[${time}] <span class="text-emerald-500">[INFO]</span> Filtro Dominios .bo ACTIVADO.`;
+                text.innerText = "PROTEGIDO";
+                text.className = "text-xs font-bold font-mono text-emerald-400";
             } else {
-                btn.className = "w-12 h-6 bg-neutral-800 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center justify-start";
-                text.innerText = "EXPUESTO (OFF)";
+                btn.className = "w-12 h-6 bg-slate-800 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center justify-start";
+                text.innerText = "EXPUESTO";
                 text.className = "text-xs font-bold font-mono text-error";
-                div.innerHTML = `[${time}] <span class="text-error">[ALERT]</span> Filtro Dominios .bo DESACTIVADO. Información expuesta sin sanitización.`;
             }
+        }
+
+        // Auth Tabs switcher
+        function switchAuthTab(tab) {
+            activeAuthTab = tab;
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+
+            if (tab === 'login') {
+                tabLogin.className = "text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-2 px-2 transition-all";
+                tabRegister.className = "text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-white pb-2 px-2 transition-all";
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                tabRegister.className = "text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-2 px-2 transition-all";
+                tabLogin.className = "text-sm font-bold uppercase tracking-wider text-slate-400 hover:text-white pb-2 px-2 transition-all";
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        // Login Handler
+        async function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username');
+            const passwordInput = document.getElementById('login-password');
+            const errorDiv = document.getElementById('login-error');
+
+            errorDiv.classList.add('hidden');
+
+            try {
+                // Hash password securely on the client side before sending
+                const hashedPass = await secureHash(passwordInput.value);
+
+                fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: usernameInput.value,
+                        password: hashedPass
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        userToken = data.token;
+                        currentUsername = data.username;
+                        localStorage.setItem('aegis_token', data.token);
+                        localStorage.setItem('aegis_username', data.username);
+                        usernameInput.value = '';
+                        passwordInput.value = '';
+                        updateAuthUI();
+                        refreshDashboard();
+                    } else {
+                        errorDiv.innerText = data.message;
+                        errorDiv.classList.remove('hidden');
+                    }
+                })
+                .catch(err => {
+                    errorDiv.innerText = "Error al conectar con el servidor.";
+                    errorDiv.classList.remove('hidden');
+                });
+            } catch (err) {
+                console.error("Hashing failed:", err);
+                errorDiv.innerText = "Error local al procesar la contraseña.";
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        // Register Handler
+        async function handleRegister(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('register-username');
+            const passwordInput = document.getElementById('register-password');
+            const msgDiv = document.getElementById('register-message');
+
+            msgDiv.classList.add('hidden');
+
+            try {
+                // Hash password securely on the client side before sending
+                const hashedPass = await secureHash(passwordInput.value);
+
+                fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: usernameInput.value,
+                        password: hashedPass
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        msgDiv.className = "text-xs font-medium text-center p-2.5 rounded text-emerald-400 bg-emerald-500/10 border border-emerald-500/20";
+                        msgDiv.innerText = data.message;
+                        msgDiv.classList.remove('hidden');
+                        usernameInput.value = '';
+                        passwordInput.value = '';
+                        setTimeout(() => switchAuthTab('login'), 1500);
+                    } else {
+                        msgDiv.className = "text-xs font-medium text-center p-2.5 rounded text-error bg-error/10 border border-error/20";
+                        msgDiv.innerText = data.message;
+                        msgDiv.classList.remove('hidden');
+                    }
+                })
+                .catch(err => {
+                    msgDiv.className = "text-xs font-medium text-center p-2.5 rounded text-error bg-error/10 border border-error/20";
+                    msgDiv.innerText = "Error al registrar el usuario.";
+                    msgDiv.classList.remove('hidden');
+                });
+            } catch (err) {
+                console.error("Hashing failed:", err);
+                msgDiv.className = "text-xs font-medium text-center p-2.5 rounded text-error bg-error/10 border border-error/20";
+                msgDiv.innerText = "Error local al procesar la contraseña.";
+                msgDiv.classList.remove('hidden');
+            }
+        }
+
+        // Logout Handler
+        function handleLogout() {
+            if (!userToken) return;
+            fetch(`/logout?token=${userToken}`, { method: 'POST' })
+            .then(() => {
+                userToken = null;
+                currentUsername = null;
+                localStorage.removeItem('aegis_token');
+                localStorage.removeItem('aegis_username');
+                updateAuthUI();
+            })
+            .catch(() => {
+                userToken = null;
+                currentUsername = null;
+                localStorage.removeItem('aegis_token');
+                localStorage.removeItem('aegis_username');
+                updateAuthUI();
+            });
+        }
+
+        // Update UI based on auth state
+        function updateAuthUI() {
+            const authContainer = document.getElementById('auth-container');
+            const socDashboard = document.getElementById('soc-dashboard');
+            const userBadge = document.getElementById('user-badge');
+            const navCta = document.getElementById('nav-cta');
+
+            if (userToken) {
+                authContainer.classList.add('hidden');
+                socDashboard.classList.remove('hidden');
+                
+                userBadge.innerText = `SOC_USER: ${currentUsername.toUpperCase()}`;
+                userBadge.classList.remove('hidden');
+                
+                navCta.innerText = "Panel SOC";
+                navCta.href = "#dashboard";
+            } else {
+                authContainer.classList.remove('hidden');
+                socDashboard.classList.add('hidden');
+                userBadge.classList.add('hidden');
+                
+                navCta.innerText = "Acceder SOC";
+                navCta.href = "#dashboard";
+            }
+        }
+
+        // Fetch dashboard data
+        function refreshDashboard() {
+            if (!userToken) return;
             
-            terminal.appendChild(div);
-            terminal.scrollTop = terminal.scrollHeight;
+            fetch(`/dashboard/data?token=${userToken}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    updateShieldUI(data.bo_protection);
+                    
+                    // Render logs
+                    const terminal = document.getElementById('mini-log-terminal');
+                    terminal.innerHTML = '';
+                    data.logs.forEach(log => {
+                        const div = document.createElement('div');
+                        div.className = "text-slate-400 border-b border-white/5 py-1 text-[11px] leading-relaxed";
+                        // Colorize threats / alerts
+                        if (log.includes("BLOQUEADA") || log.includes("ALERTA") || log.includes("DESACTIVADO") || log.includes("EXPUESTO")) {
+                            div.className = "text-error border-b border-white/5 py-1 text-[11px] font-bold";
+                        } else if (log.includes("ACTIVADO") || log.includes("PROTEGIDO") || log.includes("iniciada")) {
+                            div.className = "text-emerald-400 border-b border-white/5 py-1 text-[11px]";
+                        }
+                        div.innerText = log;
+                        terminal.appendChild(div);
+                    });
+                    
+                    // Render forbidden attempts
+                    const tbody = document.getElementById('forbidden-attempts-tbody');
+                    tbody.innerHTML = '';
+                    
+                    if (data.forbidden_attempts.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="3" class="py-4 text-center text-slate-500 font-mono italic">No se registran intentos prohibidos</td>
+                            </tr>
+                        `;
+                    } else {
+                        data.forbidden_attempts.forEach(att => {
+                            const tr = document.createElement('tr');
+                            tr.className = "border-b border-white/5 hover:bg-white/5 transition-colors";
+                            tr.innerHTML = `
+                                <td class="py-2 font-semibold text-slate-300 font-mono">${att.username}</td>
+                                <td class="py-2 text-error font-medium">${att.query}</td>
+                                <td class="py-2 text-right text-slate-500 text-[10px]">${new Date(att.timestamp).toLocaleString()}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                } else {
+                    handleLogout();
+                }
+            })
+            .catch(err => console.error("Error refreshing dashboard:", err));
         }
 
         // Open/Close chat window
@@ -375,7 +752,7 @@
             }
         }
 
-        // Send message flow
+        // Send message flow with visual loading/thinking steps
         function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -386,31 +763,53 @@
             // Append User message
             appendMessage('user', text);
 
+            // Create and append bot thinking bubble
+            const thinkingId = appendThinkingBubble();
+
+            // Set up cycling thinking texts
+            const thinkingTexts = [
+                "[Aegis Decrypt] Decodificando firmas de inyección...",
+                "[Aegis Shield] Sanitizando consulta de entrada...",
+                "[Aegis OSINT] Escaneando base de datos LeakOSINT...",
+                "[Aegis Policy] Validando políticas de privacidad de datos...",
+                "[Aegis Gateway] Filtrando exfiltraciones y credenciales..."
+            ];
+            let currentTextIndex = 0;
+            const textInterval = setInterval(() => {
+                const el = document.getElementById(thinkingId + '-text');
+                if (el) {
+                    currentTextIndex = (currentTextIndex + 1) % thinkingTexts.length;
+                    el.innerText = thinkingTexts[currentTextIndex];
+                }
+            }, 850);
+
             // Call API
             fetch('/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     query: text,
-                    protection: protectionEnabled
+                    protection: protectionEnabled,
+                    token: userToken
                 })
             })
             .then(res => res.json())
             .then(data => {
+                // Clear interval and remove thinking bubble
+                clearInterval(textInterval);
+                removeElement(thinkingId);
+                
+                // Append real bot reply
                 appendMessage('bot', data.response);
-                if (data.log) {
-                    const terminal = document.getElementById('mini-log-terminal');
-                    const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
-                    const div = document.createElement('div');
-                    div.className = data.leak ? "text-error" : "text-emerald-500";
-                    div.innerHTML = `[${time}] ${data.log}`;
-                    terminal.appendChild(div);
-                    terminal.scrollTop = terminal.scrollHeight;
+                
+                // If user logged in, refresh logs and SOC panel
+                if (userToken) {
+                    refreshDashboard();
                 }
             })
             .catch(err => {
+                clearInterval(textInterval);
+                removeElement(thinkingId);
                 console.error("Chat error:", err);
                 appendMessage('bot', "Error de red al conectar con el servidor Aegis.");
             });
@@ -422,21 +821,24 @@
             div.className = "flex items-start gap-2.5 " + (sender === 'user' ? 'justify-end' : '');
 
             let iconHtml = `
-                <div class="w-6 h-6 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center flex-shrink-0 text-primary">
+                <div class="w-6 h-6 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center flex-shrink-0 text-primary">
                     <span class="material-symbols-outlined text-[14px]">smart_toy</span>
                 </div>
             `;
             if (sender === 'user') {
                 iconHtml = `
-                    <div class="w-6 h-6 rounded-full bg-primary text-black flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary text-black flex items-center justify-center flex-shrink-0 text-xs font-bold shadow-md shadow-primary/20">
                         U
                     </div>
                 `;
             }
 
+            // Convert newlines to breaks for clean display of data
+            const formattedText = text.replace(/\n/g, '<br/>');
+
             const bubbleHtml = `
-                <div class="p-3 rounded-lg max-w-[80%] ${sender === 'user' ? 'bg-primary text-black font-semibold' : 'bg-neutral-900 border border-neutral-800 text-neutral-300'}">
-                    ${text}
+                <div class="p-3 rounded-lg max-w-[80%] ${sender === 'user' ? 'bg-gradient-to-r from-primary to-secondary text-black font-semibold' : 'bg-slate-950/70 border border-white/5 text-slate-300'}">
+                    ${formattedText}
                 </div>
             `;
 
@@ -449,6 +851,121 @@
             messagesArea.appendChild(div);
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
+
+        // Add a typing/thinking state loader
+        function appendThinkingBubble() {
+            const messagesArea = document.getElementById('chat-messages');
+            const uniqueId = 'thinking-' + Date.now();
+            const div = document.createElement('div');
+            div.id = uniqueId;
+            div.className = "flex items-start gap-2.5";
+
+            div.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center flex-shrink-0 text-primary">
+                    <span class="material-symbols-outlined text-[14px] animate-spin">sync</span>
+                </div>
+                <div class="p-3 rounded-lg max-w-[80%] bg-slate-950/70 border border-white/5 text-slate-400 font-mono text-[10px] flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                    <span id="${uniqueId}-text">[Aegis Decrypt] Decodificando firmas de inyección...</span>
+                </div>
+            `;
+
+            messagesArea.appendChild(div);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+            return uniqueId;
+        }
+
+        function removeElement(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        // Canvas Particle Grid Animation
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let particles = [];
+        const particleCount = 65;
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.35;
+                this.vy = (Math.random() - 0.5) * 0.35;
+                this.radius = Math.random() * 2 + 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+                if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+                ctx.fill();
+            }
+        }
+        
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw interactive grid lines
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.03)';
+            ctx.lineWidth = 1;
+            const gridSize = 60;
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(129, 140, 248, ${0.12 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 </html>
