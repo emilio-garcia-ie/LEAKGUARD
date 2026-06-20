@@ -8,7 +8,7 @@ import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { ThreatMap } from "@/components/dashboard/threat-map";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, statusBadge } from "@/components/ui/badge";
-import { api, Threat, ConsultedScan, DarkWebItem, DashboardKpis, ChartData, CrackedLeak } from "@/lib/api";
+import { api, Threat, ConsultedScan, DarkWebItem, DashboardKpis, ChartData, CrackedLeak, HackreadArticle } from "@/lib/api";
 
 function Kpi({ label, value }: { label: string; value: number | string }) {
   return (
@@ -29,6 +29,10 @@ export default function DashboardPage() {
   const [darkweb, setDarkweb] = useState<DarkWebItem[]>([]);
   const [recent, setRecent] = useState<Array<{ name: string; year: string; records?: string }>>([]);
   const [cracked, setCracked] = useState<CrackedLeak[]>([]);
+  const [hackread, setHackread] = useState<HackreadArticle[]>([]);
+  const [crackedPage, setCrackedPage] = useState(1);
+  const [hackreadPage, setHackreadPage] = useState(1);
+  const itemsPerPage = 3;
 
   useEffect(() => {
     Promise.all([
@@ -39,13 +43,15 @@ export default function DashboardPage() {
       api.darkweb(),
       api.breachesRecent(),
       api.crackedLeaks().catch(() => []),
-    ]).then(([k, c, t, cons, dw, br, cr]) => {
+      api.hackreadNews().catch(() => []),
+    ]).then(([k, c, t, cons, dw, br, cr, hr]) => {
       setKpis(k);
       setCharts(c);
       setThreats(t);
       setConsulted(cons);
       setDarkweb(dw.items);
       setCracked(cr);
+      setHackread(hr);
       const list = Array.isArray(br.breaches) ? br.breaches : (br.breaches as { exposedBreaches?: unknown[] })?.exposedBreaches || [];
       setRecent(
         (list as Array<Record<string, unknown>>)
@@ -116,7 +122,7 @@ export default function DashboardPage() {
         <Card className="mt-6 overflow-x-auto">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-lg font-bold flex items-center gap-2">
-              Live Monitor: Cracked.st Forum (Other Leaks)
+              Live Monitor: Cracked Forum (Other Leaks)
               <span className="flex h-2.5 w-2.5 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -140,12 +146,10 @@ export default function DashboardPage() {
                     </td>
                   </tr>
                 )}
-                {cracked.map((item, i) => (
+                {cracked.slice((crackedPage - 1) * itemsPerPage, crackedPage * itemsPerPage).map((item, i) => (
                   <tr key={i} className="border-b border-slate-800/50 hover:bg-slate-900/60">
                     <td className="px-4 py-3 font-semibold text-cyan-400">
-                      <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                        {item.title}
-                      </a>
+                      {item.title}
                     </td>
                     <td className="px-4 py-3 text-slate-300 font-mono text-xs">{item.author}</td>
                     <td className="px-4 py-3 text-slate-400 text-xs">{item.date}</td>
@@ -155,6 +159,100 @@ export default function DashboardPage() {
                 ))}
               </tbody>
             </table>
+            {cracked.length > 0 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-slate-800 text-xs">
+                <span className="text-slate-400">
+                  Mostrando <strong className="text-cyan-400">{(crackedPage - 1) * itemsPerPage + 1}</strong> a <strong className="text-cyan-400">{Math.min(crackedPage * itemsPerPage, cracked.length)}</strong> de <strong className="text-cyan-400">{cracked.length}</strong> hilos
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    disabled={crackedPage === 1}
+                    onClick={() => setCrackedPage((prev) => Math.max(prev - 1, 1))}
+                    className="px-3 py-1 bg-slate-850 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-200 rounded transition-colors border border-slate-800"
+                  >
+                    Anterior
+                  </button>
+                  <span className="px-3 py-1 text-slate-400 font-mono">
+                    Pág. {crackedPage} de {Math.ceil(cracked.length / itemsPerPage) || 1}
+                  </span>
+                  <button
+                    disabled={crackedPage === (Math.ceil(cracked.length / itemsPerPage) || 1)}
+                    onClick={() => setCrackedPage((prev) => Math.min(prev + 1, Math.ceil(cracked.length / itemsPerPage) || 1))}
+                    className="px-3 py-1 bg-slate-850 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-200 rounded transition-colors border border-slate-800"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6 overflow-x-auto">
+          <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardTitle className="text-lg font-bold flex items-center gap-2">
+              Live Monitor: Hackread News
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="w-full text-sm">
+              <thead className="text-slate-500 border-b border-slate-800">
+                <tr>
+                  {["Título del Artículo", "Autor", "Publicado", "Categoría"].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left font-medium">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {!hackread.length && (
+                  <tr>
+                    <td colSpan={4} className="text-center py-6 text-slate-500">
+                      Cargando noticias de Hackread o sesión expirada...
+                    </td>
+                  </tr>
+                )}
+                {hackread.slice((hackreadPage - 1) * itemsPerPage, hackreadPage * itemsPerPage).map((item, i) => (
+                  <tr key={i} className="border-b border-slate-800/50 hover:bg-slate-900/60">
+                    <td className="px-4 py-3 font-semibold text-cyan-400">
+                      {item.title}
+                    </td>
+                    <td className="px-4 py-3 text-slate-300 font-mono text-xs">{item.author}</td>
+                    <td className="px-4 py-3 text-slate-400 text-xs">{item.date}</td>
+                    <td className="px-4 py-3 text-slate-400 text-xs">{item.category}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {hackread.length > 0 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-slate-800 text-xs">
+                <span className="text-slate-400">
+                  Mostrando <strong className="text-cyan-400">{(hackreadPage - 1) * itemsPerPage + 1}</strong> a <strong className="text-cyan-400">{Math.min(hackreadPage * itemsPerPage, hackread.length)}</strong> de <strong className="text-cyan-400">{hackread.length}</strong> artículos
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    disabled={hackreadPage === 1}
+                    onClick={() => setHackreadPage((prev) => Math.max(prev - 1, 1))}
+                    className="px-3 py-1 bg-slate-850 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-200 rounded transition-colors border border-slate-800"
+                  >
+                    Anterior
+                  </button>
+                  <span className="px-3 py-1 text-slate-400 font-mono">
+                    Pág. {hackreadPage} de {Math.ceil(hackread.length / itemsPerPage) || 1}
+                  </span>
+                  <button
+                    disabled={hackreadPage === (Math.ceil(hackread.length / itemsPerPage) || 1)}
+                    onClick={() => setHackreadPage((prev) => Math.min(prev + 1, Math.ceil(hackread.length / itemsPerPage) || 1))}
+                    className="px-3 py-1 bg-slate-850 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-200 rounded transition-colors border border-slate-800"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -68,6 +68,7 @@ export const api = {
   dashboardCharts: () => request<ChartData>("/api/v1/dashboard/charts"),
   darkweb: () => request<{ items: DarkWebItem[] }>("/api/v1/dashboard/darkweb"),
   crackedLeaks: () => request<CrackedLeak[]>("/api/v1/dashboard/cracked-leaks"),
+  hackreadNews: () => request<HackreadArticle[]>("/api/v1/dashboard/hackread-news"),
   aiSafety: () => request<AiSafetyMetrics>("/api/v1/dashboard/ai-safety"),
   aiAnalyze: (context: string, question?: string) =>
     request<{ answer: string; model: string; confidence: number }>("/api/v1/ai/analyze", {
@@ -110,4 +111,5 @@ export type ChartData = {
 };
 export type DarkWebItem = { date: string; forum: string; title: string; victim: string; severity: string; indicator: string };
 export type CrackedLeak = { title: string; link: string; author: string; date: string; replies: string; views: string };
+export type HackreadArticle = { title: string; link: string; author: string; date: string; category: string };
 export type AiSafetyMetrics = { verificationRate: string; falsePositiveRate: string; avgConfidence: string };
