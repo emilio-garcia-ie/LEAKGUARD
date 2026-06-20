@@ -83,10 +83,10 @@ export default function DashboardPage() {
 
         {charts && <DashboardCharts data={charts} />}
 
-        {charts && (
+        {threats.length > 0 && (
           <Card className="mt-4">
             <CardHeader><CardTitle>Mapa de incidentes (Leaflet)</CardTitle></CardHeader>
-            <CardContent><ThreatMap geo={charts.geo} /></CardContent>
+            <CardContent><ThreatMap threats={threats} /></CardContent>
           </Card>
         )}
 
