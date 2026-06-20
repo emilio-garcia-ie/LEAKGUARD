@@ -2,8 +2,21 @@
 ## (Alternativas: ThreatLens, BreachRadar, DarkIntel)
 
 **Versión:** 2.0 (Ético + Transparente + Ultrarrápido)  
+**Estado:** Draft inicial — no refleja la arquitectura implementada  
 **Objetivo:** Hackathon / MVP funcional en 48 horas.  
 **Contexto:** Herramienta que monitoriza filtraciones de fuentes públicas (incluyendo entornos criminales) pero con un enfoque radical en transparencia, velocidad y privacidad.
+
+---
+
+## Historial de Versiones
+
+| Versión | Fecha | Autor | Cambios |
+|---------|-------|-------|---------|
+| 2.0 | 2026-06-20 | Equipo LeakGuard | Draft inicial con 8 módulos, stack FastAPI/Next.js/Playwright/Tor/Redis/PostgreSQL/OpenAI |
+
+> **Nota:** La versión actual describe una arquitectura ambiciosa que no se implementó tal cual. El código real usa Firebase + vanilla JS + APIs OSINT externas. Ver [SDD-plan.md](SDD-plan.md) para el plan de alineación.
+
+Ver el historial completo de cambios en [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
