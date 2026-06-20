@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LeakGuard Frontend
 
-## Getting Started
+Next.js 14 (App Router) + Tailwind CSS + shadcn/ui.
 
-First, run the development server:
+## Desarrollo
 
-```bash
+```powershell
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+El frontend reescribe `/api/*` hacia el backend FastAPI (ver `next.config.mjs`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Variables de entorno
 
-## Learn More
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | URL del backend |
 
-To learn more about Next.js, take a look at the following resources:
+## Estructura
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                    # App Router pages
+│   ├── page.tsx            # Landing
+│   ├── login/
+│   ├── dashboard/
+│   ├── exposure/
+│   ├── admin/
+│   ├── ai-safety/
+│   └── threats/[id]/
+├── components/
+│   ├── ui/                 # shadcn-style (button, card, input, badge)
+│   ├── dashboard/          # Chart.js, Leaflet map
+│   ├── layout/             # AppShell
+│   └── auth/               # ProtectedRoute
+├── contexts/auth-context.tsx
+└── lib/
+    ├── api.ts              # Cliente REST
+    └── utils.ts            # cn() helper
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Stack UI
 
-## Deploy on Vercel
+- **shadcn/ui** — componentes en `components/ui/` (Button, Card, Input, Badge)
+- **Chart.js** + react-chartjs-2 — gráficos del dashboard
+- **Leaflet** + react-leaflet — mapa de incidentes por país
+- **lucide-react** — iconos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Auth
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- JWT almacenado en `localStorage` (`leakguard_token`)
+- Demo bypass: `POST /api/v1/auth/demo`
+- Rutas protegidas usan `<ProtectedRoute>`
+
+## Build / Docker
+
+```powershell
+npm run build
+npm start
+```
+
+Docker: ver `Dockerfile` y `docker-compose.yml` en la raíz.

@@ -1,35 +1,62 @@
 # Changelog
 
-All notable changes to the SDD.md document will be documented in this file.
+All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-### Planned
-- Align SDD with actual implemented architecture (Firebase + vanilla JS + OSINT APIs)
-- Replace non-implemented modules with roadmap entries
+---
+
+## [3.0.0] - 2026-06-20
+
+### Added — Stack v2 (migración completa)
+
+- **Frontend:** Next.js 14 App Router, Tailwind CSS, shadcn/ui, Chart.js, Leaflet
+- **Backend:** FastAPI (Python 3.11), SQLAlchemy async, JWT auth
+- **PostgreSQL:** usuarios, incidentes, audit log, historial de consultas OSINT
+- **Redis:** cache de scraps y sesiones
+- **Servicios:** OSINT proxy, XposedOrNot, censura de credenciales, cálculo de riesgo
+- **Scraping:** Playwright + BeautifulSoup + aiohttp (endpoint `/api/v1/scrape`)
+- **IA:** OpenAI GPT-4o-mini + FAISS RAG offline (`/api/v1/ai/analyze`)
+- **Docker Compose:** postgres, redis, backend, frontend
+- Páginas: landing, login, dashboard, exposure, threats/[id], admin, ai-safety
+- Alertas de filtración al login/registro vía XposedOrNot
+- Demo bypass sin registro
+
+### Changed
+
+- App vanilla movida a `legacy/` (index.html, app.js, proxy Express, Firebase Functions)
+- README.md reescrito para el stack v2
+- SDD.md alineado con arquitectura implementada
+
+### Security
+
+- Token OSINT centralizado en `backend/.env` (no expuesto al browser)
+- `.gitignore` actualizado para `backend/.env` y `legacy/proxy/.env`
 
 ---
 
 ## [2.1.0] - 2026-06-20
 
-### Added
+### Added (SDD)
+
 - Section 9: Testing and Code Quality — unit tests, smoke tests, code agent strategy
-- Unit test coverage requirements for backend (70%) and frontend (50%)
-- Smoke test suite for post-deploy verification
-- Code agent must run unit and smoke tests on every PR
+
+---
+
+## [2.0.0] - 2026-06-20
+
+### Added (SDD)
+
+- Initial SDD draft with 8 modules and target stack
 
 ---
 
 ## [1.0.0] - 2026-06-20
 
-### Added
-- Initial SDD for LeakGuard (formerly "LeakWatch AI")
-- 8 modules: scraping, AI classification, risk engine, executive summary, dashboard, K-anonymity search, alerts, RAG copilot
-- Tech stack: FastAPI, Next.js, Playwright, Tor, Redis, PostgreSQL, OpenAI, FAISS
-- 48h hackathon development plan
-- Final pitch and legal disclaimer
+### Added (MVP v1 — legacy)
 
-### Notes
-- This version describes an ambitious architecture that was not fully implemented.
-- The actual codebase uses a different stack (Firebase, vanilla JS, external OSINT APIs).
-- See [SDD-plan.md](SDD-plan.md) for the plan to align the SDD with reality.
+- Vanilla JS SPA with Tailwind CDN and Chart.js
+- Express proxy + Firebase Cloud Functions for OSINT APIs
+- Exposure Check with censored credentials and risk scoring
+- Dashboard, Threat Details, Admin Panel, AI Safety (mock metrics)
+- Login breach alerts via XposedOrNot

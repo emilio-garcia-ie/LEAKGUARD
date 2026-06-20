@@ -1,27 +1,32 @@
 ---
 description: Seguridad del proxy OSINT — token nunca en el browser
-globs: functions/**/*,proxy/**/*
+globs: backend/**/*,legacy/functions/**/*,legacy/proxy/**/*
 alwaysApply: false
 ---
 
-# Seguridad del proxy
+# Seguridad del proxy OSINT
 
 ## Regla crítica
 `OSINT_TOKEN` **nunca** debe exponerse al frontend. Solo vive en:
-- `proxy/.env` (desarrollo)
-- Firebase Secret `OSINT_TOKEN` (producción)
+- `backend/.env` (desarrollo / Docker v2)
+- `legacy/proxy/.env` (legacy v1)
+- Variables de entorno del contenedor / CI
 
-## Patrón obligatorio
+## Patrón v2 (FastAPI)
 ```
-Browser → /api/scan | /api/breach-check | /api/breaches-recent → Proxy/Function → API externa
+Browser → Next.js rewrite /api/* → FastAPI /api/v1/exposure/scan → leakosintapi.com
 ```
 
-## Al editar `functions/index.js` o `proxy/server.js`
-- Mantener ambos archivos sincronizados en lógica de proxy.
-- Validar inputs antes de llamar al upstream (`request`, `email`, límites numéricos).
-- Responder con CORS y manejo de errores 4xx/502 sin filtrar tokens.
-- No loguear tokens ni respuestas con credenciales en texto plano.
+## Patrón legacy v1
+```
+Browser → /api/scan → Express/Firebase Function → leakosintapi.com
+```
+
+## Al editar `backend/app/services/osint.py` o routes de exposure
+- Validar inputs (`request`, `email`, límites numéricos).
+- Responder 503 si falta `OSINT_TOKEN`, nunca filtrar el token en errores.
+- No loguear tokens ni respuestas con credenciales en texto claro.
 
 ## Frontend
-- El browser solo envía `{ request, limit, lang }` o `{ email }`.
-- Mostrar credenciales censuradas (`Pa••••rd`, emails parciales, hashes truncados).
+- El browser solo envía `{ request, mode }` o `{ email }`.
+- Mostrar credenciales ya censuradas por el backend.

@@ -1,15 +1,17 @@
 ---
-description: Despliegue Firebase, secrets y proxy en producción
-globs: firebase.json,.firebaserc,functions/**/*
+description: Despliegue Firebase legacy v1, secrets y proxy en producción
+globs: legacy/firebase.json,.firebaserc,legacy/functions/**/*
 alwaysApply: false
 ---
 
-# Firebase deploy
+# Firebase deploy (Legacy v1)
+
+> El stack activo v2 usa Docker Compose (ver README.md). Esta regla aplica solo a `legacy/`.
 
 ## Proyecto
 - Firebase project: `leakguard-threat-intel` (`.firebaserc`)
-- Hosting sirve la raíz (`index.html`, `app.js`, `styles.css`)
-- `proxy/` y `functions/` están excluidos del hosting estático
+- Hosting sirve `legacy/` (`index.html`, `app.js`, `styles.css`)
+- `legacy/proxy/` y `legacy/functions/` excluidos del hosting estático
 
 ## Rutas API (firebase.json rewrites)
 | Ruta | Cloud Function |

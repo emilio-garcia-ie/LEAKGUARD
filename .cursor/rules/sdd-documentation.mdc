@@ -12,8 +12,9 @@ alwaysApply: false
 3. Separar **implementado** vs **roadmap** — no documentar como hecho lo que no existe en el repo.
 
 ## Referencias
-- `SDD-plan.md` — plan de alineación SDD ↔ código real.
-- Arquitectura implementada: Firebase + vanilla JS + APIs OSINT, no FastAPI/Next.js.
+- `SDD-plan.md` — estado implementado vs roadmap (v3.0 completado).
+- Arquitectura v2: `frontend/` (Next.js) + `backend/` (FastAPI) + PostgreSQL + Redis.
+- Legacy v1: `legacy/` (Firebase + vanilla JS).
 
 ## Filosofía del producto (mantener)
 - Solo metadatos de anuncios públicos; nunca almacenar ni mostrar credenciales/PII filtrados.

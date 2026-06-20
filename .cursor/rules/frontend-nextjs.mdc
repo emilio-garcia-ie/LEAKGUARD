@@ -1,0 +1,30 @@
+---
+description: Convenciones del frontend Next.js 14
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Frontend LeakGuard (Next.js 14)
+
+## Stack
+- Next.js 14 App Router, TypeScript, Tailwind CSS, shadcn/ui.
+- Chart.js (react-chartjs-2), Leaflet (react-leaflet).
+- Auth: JWT en localStorage vía `contexts/auth-context.tsx`.
+
+## Cliente API
+- Todas las llamadas REST en `src/lib/api.ts`.
+- Usar rewrites de Next.js (`/api/*` → backend) — no hardcodear tokens.
+
+## Componentes UI
+- shadcn-style en `components/ui/` (Button, Card, Input, Badge).
+- Layout autenticado: `AppShell` + `ProtectedRoute`.
+
+## Páginas
+- `/` landing, `/login`, `/dashboard`, `/exposure`, `/admin`, `/ai-safety`, `/threats/[id]`.
+
+## Estilo
+- Tema dark cyber: slate-950, acentos cyan/purple.
+- Mantener coherencia con `globals.css`.
+
+## Legacy
+- La SPA vanilla v1 está en `legacy/app.js` — no modificar salvo mantenimiento legacy.

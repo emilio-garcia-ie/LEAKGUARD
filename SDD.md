@@ -1,10 +1,9 @@
-# SDD: LeakWatch AI (Nombre provisional)
-## (Alternativas: ThreatLens, BreachRadar, DarkIntel)
+# SDD: LeakGuard
 
-**Versión:** 2.0 (Ético + Transparente + Ultrarrápido)  
-**Estado:** Draft inicial — no refleja la arquitectura implementada  
-**Objetivo:** Hackathon / MVP funcional en 48 horas.  
-**Contexto:** Herramienta que monitoriza filtraciones de fuentes públicas (incluyendo entornos criminales) pero con un enfoque radical en transparencia, velocidad y privacidad.
+**Versión:** 3.0 (Stack v2 implementado)  
+**Estado:** Alineado con el código en `frontend/` + `backend/`  
+**Objetivo:** Plataforma de threat intelligence OSINT con proxy seguro y verificación humana.  
+**Repositorio:** https://github.com/paltaunkwnow/LEAKGUARD
 
 ---
 
@@ -12,12 +11,12 @@
 
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
-| 2.1 | 2026-06-20 | Equipo LeakGuard | Sección 9: Testing y Calidad de Código — unit tests, smoke tests, estrategia del agente de código |
-| 2.0 | 2026-06-20 | Equipo LeakGuard | Draft inicial con 8 módulos, stack FastAPI/Next.js/Playwright/Tor/Redis/PostgreSQL/OpenAI |
+| 3.0 | 2026-06-20 | Equipo LeakGuard | Migración a Next.js 14 + FastAPI + PostgreSQL + Redis. SDD alineado con implementación. |
+| 2.1 | 2026-06-20 | Equipo LeakGuard | Sección 9: Testing y Calidad de Código |
+| 2.0 | 2026-06-20 | Equipo LeakGuard | Draft inicial con 8 módulos y stack objetivo |
+| 1.0 | 2026-06-20 | Equipo LeakGuard | MVP v1 vanilla JS + Firebase (ahora en `legacy/`) |
 
-> **Nota:** La versión actual describe una arquitectura ambiciosa que no se implementó tal cual. El código real usa Firebase + vanilla JS + APIs OSINT externas. Ver [SDD-plan.md](SDD-plan.md) para el plan de alineación.
-
-Ver el historial completo de cambios en [CHANGELOG.md](CHANGELOG.md).
+Ver el historial completo en [CHANGELOG.md](CHANGELOG.md). El plan de alineación está completado: [SDD-plan.md](SDD-plan.md).
 
 ---
 
@@ -36,17 +35,28 @@ Ver el historial completo de cambios en [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-## 2. Arquitectura General
+## 2. Arquitectura General (v3.0 — implementada)
 
-[Diagrama de flujo en texto plano]
-Flujo principal:
-1. Scrapers Asíncronos (Playwright + Tor Pool) -> extraen metadatos + URL.
-2. Guardan en Redis Cache (TTL: 1 hora).
-3. FastAPI Backend lee de Redis y también escribe en PostgreSQL (histórico).
-4. Backend consulta a OpenAI / RAG Local para resúmenes y copiloto.
-5. Frontend Next.js se comunica con Backend vía REST/WS.
-6. Usuario busca dominio -> Frontend hashea (SHA-256) -> envía prefijo (K-Anonymity) -> Backend devuelve hashes coincidentes -> Frontend filtra localmente.
-7. Fuentes OSINT (OTX, Ransomware.live) son consultadas por el Backend para verificación externa.
+```
+Browser (Next.js 14)
+    ↓ REST + JWT
+FastAPI Backend (/api/v1/*)
+    ├── PostgreSQL → usuarios, incidentes, audit_logs, consulted_scans
+    ├── Redis → cache de scraps, sesiones
+    ├── leakosintapi.com (OSINT_TOKEN en servidor)
+    ├── xposedornot.com (gratis, breach-check)
+    ├── OpenAI GPT-4o-mini (opcional)
+    └── FAISS RAG local (fallback offline)
+```
+
+**Flujo Exposure Check:**
+1. Frontend envía `{ request, mode }` a `POST /api/v1/exposure/scan`.
+2. Backend consulta LeakOsint con token en `.env` (nunca en browser).
+3. Si es email, merge con XposedOrNot.
+4. Backend censura credenciales, calcula riesgo y recomendaciones.
+5. Guarda consulta en PostgreSQL (`consulted_scans`).
+
+**Legacy v1:** SPA vanilla + Express/Firebase en `legacy/`.
 
 ---
 
@@ -207,41 +217,44 @@ Acción recomendada: Revisar accesos urgentemente.
 
 ---
 
-## 4. Stack Tecnológico (Preparado para Cursor)
+## 4. Stack Tecnológico (Implementado v3.0)
 
-- Frontend: Next.js 14 (App Router), Tailwind CSS, shadcn/ui.
-- Backend: Python 3.11 + FastAPI (alta velocidad, async nativo).
-- Base de Datos: PostgreSQL (para histórico de incidentes y usuarios).
-- Cache/Memoria: Redis (para almacenar los últimos scraps y sesiones).
-- Scraping: Playwright (para sitios con JS) + BeautifulSoup (para estáticos) + aiohttp.
-- Inteligencia Artificial: OpenAI API (GPT-4o-mini) + FAISS (para RAG local offline).
-- Visualización: Chart.js (gráficos) y Leaflet (mapas).
+| Capa | Tecnología | Estado |
+|------|------------|--------|
+| Frontend | Next.js 14 (App Router), Tailwind CSS, shadcn/ui | ✅ |
+| Backend | Python 3.11 + FastAPI (async) | ✅ |
+| Base de Datos | PostgreSQL | ✅ |
+| Cache | Redis | ✅ |
+| Scraping | Playwright + BeautifulSoup + aiohttp | ✅ (endpoint) |
+| IA | OpenAI GPT-4o-mini + FAISS | ✅ (fallback offline) |
+| Visualización | Chart.js + Leaflet | ✅ |
+
+**Roadmap:** Tor pool, K-Anonymity, WebSockets, alertas push.
 
 ---
 
-## 5. Estructura de Carpetas (Sugerida para Cursor)
+## 5. Estructura de Carpetas (v3.0)
 
-/leakwatch-ai
+```
+/leakguard
+├── /frontend                 # Next.js 14 App Router
+│   ├── /src/app              # landing, login, dashboard, exposure, admin, ai-safety
+│   ├── /src/components       # shadcn/ui, charts, layout
+│   └── /src/lib/api.ts       # Cliente REST
 ├── /backend
 │   ├── /app
-│   │   ├── /api         (Endpoints: /scrape, /search, /alerts, /copilot)
-│   │   ├── /core        (Scrapers, TorPool, Redis client)
-│   │   ├── /models      (SQLAlchemy or Pydantic models)
-│   │   ├── /services    (AI service, Risk engine)
-│   │   └── main.py      (FastAPI entrypoint)
-│   ├── /data            (Casos pre-cargados para RAG)
-│   ├── requirements.txt
-│   └── Dockerfile
-├── /frontend
-│   ├── /app
-│   │   ├── /dashboard   (Page)
-│   │   ├── /search      (Page)
-│   │   ├── /components  (UI components)
-│   │   └── /lib         (Utils, K-Anonymity hasher)
-│   ├── package.json
-│   └── next.config.js
-├── /docker-compose.yml  (PostgreSQL + Redis + Backend + Frontend)
+│   │   ├── /api/routes       # auth, threats, exposure, dashboard, ai
+│   │   ├── /core             # config, database, redis, security
+│   │   ├── /models           # SQLAlchemy
+│   │   ├── /services         # osint, breach, censor, exposure, scraping, ai_rag
+│   │   └── main.py
+│   └── requirements.txt
+├── /legacy                   # v1: index.html, app.js, proxy/, functions/
+├── docker-compose.yml
+├── SDD.md
+├── CHANGELOG.md
 └── README.md
+```
 
 ---
 
@@ -260,39 +273,33 @@ Acción recomendada: Revisar accesos urgentemente.
 
 ## 9. Testing y Calidad de Código
 
-### 9.1. Unit Tests
-- **Backend (Cloud Functions):** Tests unitarios para cada función proxy (`scanProxy`, `breachCheckProxy`, `breachesRecentProxy`) cubriendo:
-  - Validación de inputs (campos requeridos, tipos, límites)
-  - Respuestas exitosas del upstream
-  - Errores del upstream (502, timeouts)
-  - CORS headers
-- **Frontend (app.js):** Tests para funciones puras:
-  - `calculateRealRiskPercent()` — fórmula ponderada
-  - `generateExposureRecommendations()` — prioridades correctas
-  - `parseOsintResponse()` — múltiples formatos de respuesta
-  - Censura de credenciales (`censorCredentials()`)
-- **Framework:** Jest (Node.js) para backend, Vitest o Jest para frontend.
+### 9.1. Unit Tests (objetivo v3.0)
+- **Backend (FastAPI):** `pytest` para:
+  - `services/exposure.py` — `calculate_real_risk_percent()`, `parse_osint_response()`
+  - `services/censor.py` — censura de passwords, emails, hashes
+  - `api/routes/exposure.py` — validación de inputs, errores 503 sin token
+- **Frontend (Next.js):** Vitest para `lib/api.ts` y utilidades puras.
+- **Legacy (v1):** Tests Jest para funciones en `legacy/app.js` (referencia).
 
 ### 9.2. Smoke Tests
-- **E2E básico:** Al desplegar, ejecutar automáticamente:
-  1. Verificar que `index.html` carga sin errores 4xx/5xx
-  2. Verificar que las 3 rutas de API (`/api/scan`, `/api/breach-check`, `/api/breaches-recent`) responden (pueden devolver error de auth si no hay token, pero no 404)
-  3. Verificar que el dashboard renderiza las 4 gráficas sin crash
-- **Automatización:** Script de smoke test que se ejecuta post-deploy en Firebase Hosting.
+- `GET /health` → 200
+- `GET /api/v1/threats` → lista de incidentes
+- Frontend carga `/dashboard` sin error 5xx
+- `POST /api/v1/exposure/scan` responde (503 si falta OSINT_TOKEN)
 
 ### 9.3. Estrategia del Agente de Código
-- Todo PR debe incluir tests unitarios para lógica nueva.
-- Los smoke tests se ejecutan automáticamente post-deploy.
-- Cobertura mínima: 70% en backend, 50% en frontend (MVP hackathon).
+- Todo PR debe incluir tests para lógica nueva en backend.
+- Cobertura mínima objetivo: 70% backend, 50% frontend.
+- No commitear `OSINT_TOKEN` ni `backend/.env`.
 
 ---
 
 ## 10. Pitch Final (30 segundos)
 
-"Mientras que herramientas como VECERT roban datos filtrados y los venden en secreto, LeakWatch AI es completamente transparente. Rastreamos los anuncios públicos de grupos de ransomware y foros criminales, pero nunca almacenamos ni mostramos credenciales o datos personales. Cada alerta muestra la URL exacta de la fuente original y un nivel de confianza verificado con OSINT. Nuestra IA traduce el caos técnico a un resumen ejecutivo accionable y nuestro buscador es 100% anónimo gracias a hash parcial. Pasamos de 'información oscura' a 'inteligencia verificada y ética en menos de 3 segundos'."
+"Mientras que herramientas opacas comercializan datos filtrados en secreto, **LeakGuard** es transparente y seguro. Consultamos índices OSINT con proxy backend — el token nunca llega al navegador —, censuramos credenciales, calculamos riesgo explicable y permitimos verificación humana con audit trail en PostgreSQL. Nuestra IA (GPT-4o-mini + FAISS) traduce incidentes a recomendaciones accionables. De filtraciones dispersas a inteligencia verificada en segundos."
 
 ---
 
 ## 11. Descargo de Responsabilidad Legal (Para incluir en el Footer)
 
-"LeakWatch AI solo indexa metadatos de anuncios públicos disponibles en internet. No facilitamos el acceso a datos filtrados, ni almacenamos información personal. Toda la información mostrada es de dominio público y se proporciona únicamente con fines de concienciación y seguridad. Recomendamos a los usuarios verificar la autenticidad de las fuentes directamente."
+"LeakGuard indexa metadatos de filtraciones públicas vía APIs OSINT. No almacenamos ni mostramos credenciales en texto claro — solo representaciones censuradas. La información se proporciona con fines de concienciación y seguridad. Verifique la autenticidad de las fuentes directamente."
