@@ -3,11 +3,10 @@ import re
 from typing import Any
 
 from app.services.censor import (
-    censor_email,
-    censor_generic,
     censor_hash,
     censor_password,
-    censor_phone,
+    extract_osint_date,
+    format_login_display,
     normalize_osint_entry,
     severity_from_record,
 )
@@ -71,15 +70,7 @@ def parse_osint_response(data: dict[str, Any] | None) -> tuple[list[dict[str, An
                 elif normalized.get("hash"):
                     stats["hashedPasswords"] += 1
 
-                login_display = (
-                    censor_email(normalized["email"])
-                    if normalized.get("email")
-                    else censor_phone(normalized["phone"])
-                    if normalized.get("phone")
-                    else censor_generic(normalized["name"])
-                    if normalized.get("name")
-                    else "—"
-                )
+                login_display = format_login_display(normalized)
 
                 cred = (
                     censor_password(pwd)
@@ -89,16 +80,7 @@ def parse_osint_response(data: dict[str, Any] | None) -> tuple[list[dict[str, An
                     else "—"
                 )
 
-                # Extract date: try entry-level fields first, then source-level
-                entry_date = (
-                    entry.get("LastActive") or entry.get("Date") or entry.get("date")
-                    or entry.get("Created") or entry.get("created")
-                    or source_data.get("LastUpdate") or source_data.get("Date")
-                    or source_data.get("date") or "—"
-                )
-                # Normalize date to YYYY-MM-DD if it's a datetime string
-                if isinstance(entry_date, str) and len(entry_date) > 10 and " " in entry_date:
-                    entry_date = entry_date.split(" ")[0]
+                entry_date = extract_osint_date(entry, source_data)
 
                 records.append(
                     {

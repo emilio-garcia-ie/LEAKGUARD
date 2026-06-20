@@ -29,6 +29,23 @@ MOCK_OSINT_RESPONSE = {
     },
 }
 
+ALIEN_TXTBASE_RESPONSE = {
+    "NumOfResults": 3,
+    "NumOfDatabase": 1,
+    "List": {
+        "Alien TxtBase": {
+            "NumOfResults": 3,
+            "LastUpdate": "2024-06-12",
+            "InfoLeak": "Alien TxtBase stealer logs",
+            "Data": [
+                {"Pass": "1020304050", "Nick": "analista@empresa.com", "LastActive": "2024-05-01"},
+                {"Pass": "12345678", "Log": "user@dominio.bo"},
+                {"Pass": "demo@corp.com:clave123"},
+            ],
+        }
+    },
+}
+
 
 def test_parse_osint_response_none():
     records, stats = parse_osint_response(None)
@@ -56,6 +73,16 @@ def test_parse_osint_response_with_data():
         assert "•" in record["login"] or "*" in record["login"] or record["login"] == "—"
         if record["credential"] != "—":
             assert "•" in record["credential"]
+
+
+def test_parse_osint_response_alien_txtbase_login_and_date():
+    records, stats = parse_osint_response(ALIEN_TXTBASE_RESPONSE)
+    assert len(records) == 3
+    assert stats["databasesWithHits"] == 1
+    assert all(record["login"] != "—" for record in records)
+    assert records[0]["date"] == "2024-05-01"
+    assert records[1]["date"] == "2024-06-12"
+    assert "@" in records[0]["login"] or "*" in records[0]["login"]
 
 
 def test_calculate_risk_no_records():

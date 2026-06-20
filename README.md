@@ -366,5 +366,5 @@ Ver [legacy/README.md](legacy/README.md).
 ---
 
 <p align="center">
-  <strong>LeakGuard</strong> — Inteligencia verificada, proxy seguro, stack preparado para Cursor.
+  <strong>LeakGuard</strong> — Inteligencia verificada y proxy seguro OSINT.
 </p>
