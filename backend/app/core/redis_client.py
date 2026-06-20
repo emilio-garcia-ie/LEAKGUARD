@@ -5,13 +5,37 @@ import redis.asyncio as redis
 
 from app.core.config import settings
 
-_pool: redis.Redis | None = None
+class MockRedis:
+    def __init__(self):
+        self.store = {}
+        
+    async def get(self, key: str) -> Any | None:
+        return self.store.get(key)
+        
+    async def set(self, key: str, value: Any, ex: int = None) -> None:
+        self.store[key] = value
+        
+    async def ping(self) -> bool:
+        return True
+
+_pool: redis.Redis | MockRedis | None = None
 
 
-async def get_redis() -> redis.Redis:
+async def get_redis() -> redis.Redis | MockRedis:
     global _pool
     if _pool is None:
-        _pool = redis.from_url(settings.redis_url, decode_responses=True)
+        if settings.redis_url.lower() == "mock":
+            print("Using In-Memory Mock Redis client.")
+            _pool = MockRedis()
+        else:
+            try:
+                client = redis.from_url(settings.redis_url, decode_responses=True)
+                await client.ping()
+                _pool = client
+                print("Successfully connected to Redis server.")
+            except Exception as e:
+                print(f"Warning: Could not connect to Redis at {settings.redis_url} ({e}). Falling back to In-Memory Mock Redis.")
+                _pool = MockRedis()
     return _pool
 
 
