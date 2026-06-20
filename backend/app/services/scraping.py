@@ -112,3 +112,108 @@ async def scrape_ransomware_feed() -> list[dict[str, Any]]:
     if victims:
         await cache_set(RANSOMWARE_CACHE_KEY, victims, ttl_seconds=900)
     return victims
+
+
+CRACKED_LEAKS_URL = "https://cracked.st/Forum-Other-Leaks"
+CRACKED_LEAKS_CACHE_KEY = "scrape:cracked:leaks"
+
+
+async def scrape_cracked_leaks() -> list[dict[str, Any]]:
+    cached = await cache_get(CRACKED_LEAKS_CACHE_KEY)
+    if cached and isinstance(cached, list):
+        return cached
+
+    cookie_str = (
+        "__ddg1_=60UdzxdpTHMNaDNWinYd; "
+        "sid=7363f4a4231ed68bb2a3bdfcb2e66766; "
+        "__ddg9_=189.28.78.212; "
+        "mybb[lastvisit]=1781966302; "
+        "mybb[lastactive]=1781981695; "
+        "mybbuser=4985126_MYnTyTecC78tzy3B8qwSDMPBQFDRMsCX4rsWXyPPNrM1FJqhWY; "
+        "mybb[announcements]=0; "
+        "mybb[forumread]=a%3A1%3A%7Bi%3A314%3Bi%3A1781982288%3B%7D; "
+        "__ddg8_=rWbCXRWr8eLaoLZU; "
+        "__ddg10_=1781982303"
+    )
+
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "es-419,es;q=0.9,es-ES;q=0.8,en;q=0.7,en-GB;q=0.6,en-US;q=0.5",
+        "Cookie": cookie_str,
+        "priority": "u=0, i",
+        "sec-ch-ua": '"Microsoft Edge";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "none",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(CRACKED_LEAKS_URL, headers=headers, timeout=aiohttp.ClientTimeout(total=20)) as resp:
+                if resp.status != 200:
+                    return []
+                html = await resp.text()
+    except Exception:
+        return []
+
+    soup = BeautifulSoup(html, "html.parser")
+    subject_spans = soup.find_all("span", class_=lambda c: c and ("subject_" in c or "subject_new" in c or "subject_old" in c))
+
+    threads = []
+    for span in subject_spans:
+        tr = span.find_parent("tr")
+        if not tr:
+            continue
+        tds = tr.find_all("td")
+        if len(tds) < 5:
+            continue
+
+        a = span.find("a")
+        if not a:
+            continue
+
+        title = a.get_text(strip=True)
+        href = a.get("href") or ""
+        link = f"https://cracked.st/{href}" if href else ""
+
+        # Parse Author & Date
+        author = "Unknown"
+        date_str = ""
+        author_div = tr.find(class_=lambda c: c and ("author" in c or "thread_author" in c))
+        if author_div:
+            author_a = author_div.find("a")
+            if author_a:
+                author = author_a.get_text(strip=True)
+            else:
+                author = author_div.get_text(strip=True)
+            
+            date_span = author_div.find(class_=lambda c: c and "date" in c)
+            if date_span:
+                date_str = date_span.get_text(strip=True)
+            else:
+                # Remove author name from div text to get date
+                full_text = author_div.get_text(strip=True)
+                date_str = full_text.replace(author, "").strip()
+
+        # Parse Replies & Views
+        replies = tds[2].get_text(strip=True).replace("Replies", "").strip()
+        views = tds[3].get_text(strip=True).replace("Views", "").strip()
+
+        threads.append({
+            "title": title,
+            "link": link,
+            "author": author,
+            "date": date_str or "Unknown",
+            "replies": replies,
+            "views": views
+        })
+
+    if threads:
+        await cache_set(CRACKED_LEAKS_CACHE_KEY, threads, ttl_seconds=600)
+    return threads
+
