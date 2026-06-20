@@ -17,8 +17,8 @@ graph TD
     A[Entrada del Usuario en Chat] --> B{¿Detecta Correo o Teléfono?}
     B -->|No| C[Procesamiento Estándar]
     B -->|Sí| D[Activar Módulo OSINT]
-    D --> E{¿Filtro .bo ON u OFF?}
-    E -->|ON - Protección Activa| F["🚫 Bloqueo Regional [DATA PROTECTED - BOLIVIA]"]
+    D --> E{¿Filtro Gubernamental?}
+    E -->|ON - Protección Activa| F["🚫 Bloqueo: [DATA PROTECTED - GOVERNMENT REGULATION]"]
     F --> G["Log en Terminal de Auditoría: Acceso Denegado (Verde)"]
     E -->|OFF - Modo Expuesto| H[Consulta API LeakOSINT]
     H --> I[Obtención de Bases de Datos Comprometidas]
@@ -29,9 +29,9 @@ graph TD
 ### ⚙️ Lógica de Funcionamiento:
 
 1. **Identificación Automática:** El backend analiza sintácticamente la entrada del usuario en el chat. Si detecta un patrón correspondiente a un correo electrónico (`user@domain.com`) o un número telefónico, se activa de forma automática el módulo OSINT.
-2. **Filtro Georeferenciado (`.bo`):**
-   * **`Interruptor ON` (Protección Activa):** Si la protección está activada desde el panel de control de la landing page, cualquier intento de buscar información sobre dominios terminados en `.bo` (Bolivia) es interceptado inmediatamente a nivel de servidor. La API externa **no es consultada** y el bot responde con un aviso de bloqueo de seguridad nacional: 
-     `[DATA PROTECTED - BOLIVIA REGIONAL DOMAIN REGULATION]`
+2. **Filtro de Dominios Gubernamentales y Críticos (`.gov`, `.gob`, `.minsalud`):**
+   * **`Interruptor ON` (Protección Activa):** Si la protección está activada desde el panel de control de la landing page, cualquier intento de buscar información sobre dominios gubernamentales o del sector salud (terminados en `.gov`, `.gob` o que contengan `.minsalud`) es interceptado inmediatamente a nivel de servidor. La API externa **no es consultada** y el bot responde con un aviso de bloqueo de seguridad gubernamental: 
+     `[DATA PROTECTED - GOVERNMENT & CRITICAL DOMAIN REGULATION]`
      Al mismo tiempo, la terminal de auditoría de la web registra un log de acceso denegado en color **verde**.
    * **`Interruptor OFF` (Modo Expuesto):** Si el usuario desactiva el interruptor, el backend realiza la consulta real a la API de LeakOSINT, obtiene las bases de datos comprometidas (ej. combos de contraseñas, dumps públicos) y las pasa de forma dinámica al modelo **Gemini 2.5** para que formule una advertencia detallada y personalizada sobre las vulnerabilidades encontradas.
 3. **Integración Dinámica con Gemini:** A diferencia de los sistemas tradicionales, la IA no responde con datos genéricos; el backend inyecta los resultados en vivo de la base de datos de filtraciones directamente en el contexto del sistema.
@@ -70,4 +70,4 @@ graph TD
 > **Aegis Security Guardrails** actúa en la capa de transporte previa al procesamiento de lenguaje natural, garantizando latencia ultra baja y máxima protección del backend sin penalizar la experiencia de usuario.
 
 > [!WARNING]
-> Desactivar el filtro georeferenciado `.bo` expone las consultas a servicios de terceros y debe ser realizado únicamente bajo protocolos de auditoría autorizados.
+> Desactivar el filtro de dominios gubernamentales y críticos (`.gov`, `.gob`, `.minsalud`) expone las consultas a servicios de terceros y debe ser realizado únicamente bajo protocolos de auditoría autorizados.
