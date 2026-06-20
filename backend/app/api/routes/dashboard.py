@@ -9,7 +9,7 @@ from app.core.redis_client import cache_get
 from app.data.seed import DARKWEB_LEAKS, THREATS, incident_to_api
 from app.models.incident import Incident
 from app.services.ai_rag import ai_safety_metrics
-from app.services.scraping import RANSOMWARE_CACHE_KEY, scrape_ransomware_feed, scrape_cracked_leaks
+from app.services.scraping import RANSOMWARE_CACHE_KEY, scrape_ransomware_feed, scrape_cracked_leaks, scrape_hackread_news
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
@@ -80,6 +80,12 @@ async def ransomware_feed():
 @router.get("/cracked-leaks")
 async def cracked_leaks():
     items = await scrape_cracked_leaks()
+    return items
+
+
+@router.get("/hackread-news")
+async def hackread_news():
+    items = await scrape_hackread_news()
     return items
 
 

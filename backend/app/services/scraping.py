@@ -1,5 +1,6 @@
 """Scraping service: Playwright (JS), BeautifulSoup (static), aiohttp (async HTTP)."""
 
+import asyncio
 import hashlib
 from typing import Any
 
@@ -114,52 +115,24 @@ async def scrape_ransomware_feed() -> list[dict[str, Any]]:
     return victims
 
 
-CRACKED_LEAKS_URL = "https://cracked.st/Forum-Other-Leaks"
 CRACKED_LEAKS_CACHE_KEY = "scrape:cracked:leaks"
 
 
-async def scrape_cracked_leaks() -> list[dict[str, Any]]:
-    cached = await cache_get(CRACKED_LEAKS_CACHE_KEY)
-    if cached and isinstance(cached, list):
-        return cached
-
-    cookie_str = (
-        "__ddg1_=60UdzxdpTHMNaDNWinYd; "
-        "sid=7363f4a4231ed68bb2a3bdfcb2e66766; "
-        "__ddg9_=189.28.78.212; "
-        "mybb[lastvisit]=1781966302; "
-        "mybb[lastactive]=1781981695; "
-        "mybbuser=4985126_MYnTyTecC78tzy3B8qwSDMPBQFDRMsCX4rsWXyPPNrM1FJqhWY; "
-        "mybb[announcements]=0; "
-        "mybb[forumread]=a%3A1%3A%7Bi%3A314%3Bi%3A1781982288%3B%7D; "
-        "__ddg8_=rWbCXRWr8eLaoLZU; "
-        "__ddg10_=1781982303"
-    )
-
-    headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-language": "es-419,es;q=0.9,es-ES;q=0.8,en;q=0.7,en-GB;q=0.6,en-US;q=0.5",
-        "Cookie": cookie_str,
-        "priority": "u=0, i",
-        "sec-ch-ua": '"Microsoft Edge";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "document",
-        "sec-fetch-mode": "navigate",
-        "sec-fetch-site": "none",
-        "sec-fetch-user": "?1",
-        "upgrade-insecure-requests": "1",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
-    }
-
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(CRACKED_LEAKS_URL, headers=headers, timeout=aiohttp.ClientTimeout(total=20)) as resp:
+async def scrape_cracked_page(
+    session: aiohttp.ClientSession,
+    page_num: int,
+    sem: asyncio.Semaphore,
+    headers: dict[str, str]
+) -> list[dict[str, Any]]:
+    url = f"https://cracked.st/Forum-Other-Leaks?page={page_num}"
+    async with sem:
+        try:
+            async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
                 if resp.status != 200:
                     return []
                 html = await resp.text()
-    except Exception:
-        return []
+        except Exception:
+            return []
 
     soup = BeautifulSoup(html, "html.parser")
     subject_spans = soup.find_all("span", class_=lambda c: c and ("subject_" in c or "subject_new" in c or "subject_old" in c))
@@ -212,8 +185,168 @@ async def scrape_cracked_leaks() -> list[dict[str, Any]]:
             "replies": replies,
             "views": views
         })
+    return threads
+
+
+async def scrape_cracked_leaks() -> list[dict[str, Any]]:
+    cached = await cache_get(CRACKED_LEAKS_CACHE_KEY)
+    if cached and isinstance(cached, list):
+        return cached
+
+    cookie_str = (
+        "__ddg1_=60UdzxdpTHMNaDNWinYd; "
+        "sid=7363f4a4231ed68bb2a3bdfcb2e66766; "
+        "mybb[lastvisit]=1781966302; "
+        "mybb[lastactive]=1781981695; "
+        "mybbuser=4985126_MYnTyTecC78tzy3B8qwSDMPBQFDRMsCX4rsWXyPPNrM1FJqhWY; "
+        "mybb[announcements]=0; "
+        "__ddg9_=186.121.254.130; "
+        "mybb[forumread]=a%3A1%3A%7Bi%3A314%3Bi%3A1781984437%3B%7D; "
+        "__ddg8_=8dksfx5jW5cvZ1l7; "
+        "__ddg10_=1781984446"
+    )
+
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "es-419,es;q=0.9,es-ES;q=0.8,en;q=0.7,en-GB;q=0.6,en-US;q=0.5",
+        "Cookie": cookie_str,
+        "priority": "u=0, i",
+        "referer": "https://cracked.st/Forum-Other-Leaks",
+        "sec-ch-ua": '"Microsoft Edge";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "same-origin",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
+    }
+
+    sem = asyncio.Semaphore(3)
+    
+    threads = []
+    try:
+        async with aiohttp.ClientSession() as session:
+            tasks = [scrape_cracked_page(session, page, sem, headers) for page in range(1, 11)]
+            results = await asyncio.gather(*tasks)
+            for r in results:
+                threads.extend(r)
+    except Exception:
+        pass
 
     if threads:
         await cache_set(CRACKED_LEAKS_CACHE_KEY, threads, ttl_seconds=600)
     return threads
+
+
+HACKREAD_NEWS_CACHE_KEY = "scrape:hackread:news"
+
+
+async def scrape_hackread_page(
+    session: aiohttp.ClientSession,
+    page_num: int,
+    sem: asyncio.Semaphore,
+    headers: dict[str, str]
+) -> list[dict[str, Any]]:
+    url = f"https://hackread.com/wp-json/wp/v2/posts?page={page_num}&per_page=10&_embed=true"
+    async with sem:
+        try:
+            async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                if resp.status != 200:
+                    return []
+                data = await resp.json()
+        except Exception:
+            return []
+
+    results = []
+    for p in data:
+        if not isinstance(p, dict):
+            continue
+
+        title = p.get("title", {}).get("rendered", "")
+        href = p.get("link", "")
+        date_str = p.get("date", "").replace("T", " ")
+
+        author = "Unknown"
+        authors_list = p.get("authors")
+        if authors_list and isinstance(authors_list, list) and len(authors_list) > 0:
+            author = authors_list[0].get("display_name", "Unknown")
+        else:
+            embedded_author = p.get("_embedded", {}).get("author", [])
+            if embedded_author and len(embedded_author) > 0:
+                author = embedded_author[0].get("name", "Unknown")
+
+        category = "General"
+        wp_terms = p.get("_embedded", {}).get("wp:term", [])
+        for term_group in wp_terms:
+            for term in term_group:
+                if term.get("taxonomy") == "category":
+                    category = term.get("name", "General")
+                    break
+
+        results.append({
+            "title": title,
+            "link": href,
+            "author": author,
+            "date": date_str,
+            "category": category
+        })
+
+    return results
+
+
+async def scrape_hackread_news() -> list[dict[str, Any]]:
+    cached = await cache_get(HACKREAD_NEWS_CACHE_KEY)
+    if cached and isinstance(cached, list):
+        return cached
+
+    cookie_str = (
+        "_ga=GA1.1.242570283.1781985004; "
+        "__gads=ID=ba1b78384cf98e93:T=1781985007:RT=1781985007:S=ALNI_MYucYylljp4xPhsNo5YlrhRzLehAA; "
+        "__gpi=UID=0000148731a2b1fe:T=1781985007:RT=1781985007:S=ALNI_MantHIFg-AiExlFGfgQigfqt0WAUQ; "
+        "__eoi=ID=18f85a773f5fc1ec:T=1781985007:RT=1781985007:S=AA-AfjY3acprRgGDGp1VqER-L-wW; "
+        "sib_cuid=19f9c422-f6ed-4f29-b782-20faf87dd409; "
+        "_color_system_schema=default; "
+        "FCCDCF=[null,null,null,null,null,null,[[32,\"\\\"60263652-878d-4145-92cb-50ff0231767f\\\",[1781985005,37000000]\"]]]; "
+        "_ga_K86RKJVC6L=GS2.1.s1781985003$o1$g1$t1781985008$j55$l0$h0; "
+        "FCNEC=[[\"AKsRol_rAMT9PDV-YefXKx8TCglevjyyEaPBovG9sy7zSDcJqVb8kG3_xes4b5zFJSwHW4iMuxgfisfbvY_pSibK-2H8rhO3YwiJedPOTwRMQ22GhsFgyvV1ds8PJ_5Zsp2xuWVcoBwlKejSaEkKlzUgmfesWPfTPQ==\"]]"
+    )
+
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "es-419,es;q=0.9,es-ES;q=0.8,en;q=0.7,en-GB;q=0.6,en-US;q=0.5",
+        "Cookie": cookie_str,
+        "priority": "u=0, i",
+        "sec-ch-ua": '"Microsoft Edge";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "none",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0"
+    }
+
+    sem = asyncio.Semaphore(3)
+    articles = []
+    try:
+        async with aiohttp.ClientSession() as session:
+            tasks = [scrape_hackread_page(session, page, sem, headers) for page in range(1, 11)]
+            results = await asyncio.gather(*tasks)
+            seen_titles = set()
+            for r in results:
+                for art in r:
+                    if art["title"] not in seen_titles:
+                        seen_titles.add(art["title"])
+                        articles.append(art)
+    except Exception:
+        pass
+
+    if articles:
+        await cache_set(HACKREAD_NEWS_CACHE_KEY, articles, ttl_seconds=600)
+    return articles
+
+
 
