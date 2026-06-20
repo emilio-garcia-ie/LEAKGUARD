@@ -1,7 +1,7 @@
 # 🛡️ Aegis Security & OSINT Audit Hub
 
 [![Security Shield](https://img.shields.io/badge/Security-Aegis%20Guardrails-red?style=for-the-badge&logo=shieldsdotio)](https://github.com)
-[![OSINT Audit](https://img.shields.io/badge/OSINT-Audit%20RealTime-blue?style=for-the-badge&logo=spy](https://github.com)
+[![OSINT Audit](https://img.shields.io/badge/OSINT-Audit%20RealTime-blue?style=for-the-badge&logo=spy)](https://github.com)
 [![AI Power](https://img.shields.io/badge/AI-Gemini%202.5-orange?style=for-the-badge&logo=google-gemini)](https://github.com)
 
 Bienvenido al centro de documentación de **Aegis Hub**, una plataforma avanzada de ciberseguridad y auditoría en tiempo real impulsada por Inteligencia Artificial. Este sistema combina detección proactiva de filtraciones de datos con una barrera defensiva de última generación frente a ataques de manipulación de modelos de lenguaje (LLM).
@@ -15,12 +15,12 @@ El sistema implementa una **Auditoría OSINT en Tiempo Real** mediante la integr
 ```mermaid
 graph TD
     A[Entrada del Usuario en Chat] --> B{¿Detecta Correo o Teléfono?}
-    B -- No --> C[Procesamiento Estándar]
-    B -- Sí --> D[Activar Módulo OSINT]
+    B -->|No| C[Procesamiento Estándar]
+    B -->|Sí| D[Activar Módulo OSINT]
     D --> E{¿Filtro .bo ON u OFF?}
-    E -- ON (Protección Activa) --> F["🚫 Bloqueo Regional [DATA PROTECTED - BOLIVIA]"]
-    F --> G[Log en Terminal de Auditoría: Acceso Denegado (Verde)]
-    E -- OFF (Modo Expuesto) --> H[Consulta API LeakOSINT]
+    E -->|ON - Protección Activa| F["🚫 Bloqueo Regional [DATA PROTECTED - BOLIVIA]"]
+    F --> G["Log en Terminal de Auditoría: Acceso Denegado (Verde)"]
+    E -->|OFF - Modo Expuesto| H[Consulta API LeakOSINT]
     H --> I[Obtención de Bases de Datos Comprometidas]
     I --> J[Inyección Dinámica de Contexto en Gemini 2.5]
     J --> K[Generación de Advertencia Detallada y Personalizada]
@@ -46,10 +46,10 @@ Para proteger al asistente de IA de ser manipulado, secuestrado cognitivamente o
 graph TD
     A[Consulta del Usuario] --> B[Escaneo Heurístico Aegis Guardrails]
     B --> C{¿Se detecta patrón de Inyección / Bypass?}
-    C -- Sí (Ataque Detectado) --> D["🚫 Interceptación de la Petición (No llega a Gemini)"]
-    D --> E["💬 Respuesta: [PROMPT SHIELD DETECTED: <Categoría>]"]
+    C -->|Sí - Ataque Detectado| D["🚫 Interceptación de la Petición (No llega a Gemini)"]
+    D --> E["💬 Respuesta: [PROMPT SHIELD DETECTED: Categoría]"]
     D --> F[🚨 Consola Admin: Registro de Alerta en Rojo Neón]
-    C -- No (Seguro) --> G[Procesamiento en Gemini]
+    C -->|No - Seguro| G[Procesamiento en Gemini]
 ```
 
 ### 🛡️ Características Principales:
