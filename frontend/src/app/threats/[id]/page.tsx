@@ -7,10 +7,12 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, statusBadge } from "@/components/ui/badge";
 import { api, Threat } from "@/lib/api";
+import { useLang } from "@/contexts/language-context";
 
 export default function ThreatDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const { t } = useLang();
   const [threat, setThreat] = useState<Threat | null>(null);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function ThreatDetailPage() {
   if (!threat) {
     return (
       <ProtectedRoute>
-        <AppShell><p className="text-slate-400">Cargando incidente...</p></AppShell>
+        <AppShell><p className="text-slate-400">{t.loading_threads.split(" ")[0]}...</p></AppShell>
       </ProtectedRoute>
     );
   }
@@ -40,18 +42,18 @@ export default function ThreatDetailPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">
-          <Card><CardContent className="pt-6"><div className="text-3xl font-bold text-red-400">{threat.riskScore}</div><div className="text-sm text-slate-500">Risk Score</div></CardContent></Card>
-          <Card><CardContent className="pt-6"><div className="text-3xl font-bold text-purple-400">{threat.confidence}%</div><div className="text-sm text-slate-500">Confidence</div></CardContent></Card>
+          <Card><CardContent className="pt-6"><div className="text-3xl font-bold text-red-400">{threat.riskScore}</div><div className="text-sm text-slate-500">{t.col_risk}</div></CardContent></Card>
+          <Card><CardContent className="pt-6"><div className="text-3xl font-bold text-purple-400">{threat.confidence}%</div><div className="text-sm text-slate-500">{t.col_conf}</div></CardContent></Card>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
           <Card>
-            <CardHeader><CardTitle>Detalles</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t.col_victim}</CardTitle></CardHeader>
             <CardContent className="text-sm space-y-2 text-slate-300">
-              <p><strong>Víctima:</strong> {threat.victim}</p>
-              <p><strong>Sector:</strong> {threat.sector}</p>
-              <p><strong>País:</strong> {threat.country}</p>
-              <p><strong>Fecha:</strong> {threat.date}</p>
+              <p><strong>{t.col_victim}:</strong> {threat.victim}</p>
+              <p><strong>{t.col_sector}:</strong> {threat.sector}</p>
+              <p><strong>{t.col_country}:</strong> {threat.country}</p>
+              <p><strong>{t.col_date}:</strong> {threat.date}</p>
             </CardContent>
           </Card>
           <Card>

@@ -8,6 +8,91 @@ from app.models.incident import Incident
 
 THREATS = [
     {
+        "id": "TR-2026-064",
+        "date": "2026-06-22",
+        "actor": "Lazarus Group",
+        "victim": "Banxico (Banco de México)",
+        "sector": "Finance",
+        "country": "Mexico",
+        "riskScore": 93,
+        "confidence": 94,
+        "status": "Critical",
+        "verificationStatus": "Verified",
+        "whyCritical": {"credentialsExposed": True, "financialRecordsAffected": True, "knownRansomwareActor": False, "publicEvidenceAvailable": True},
+        "businessImpact": "Severe risk to national financial transaction settlement system (SPEI) and currency trading logs.",
+        "technicalImpact": "Exfiltration of API configurations and transaction logs from secondary settlement databases.",
+        "actions": {"immediate": "Rotate all banking API keys.", "hours24": "Audit SPEI server traffic logs.", "days7": "Enforce strict IP whitelisting for payment gateways."},
+        "evidence": {"source": "Underground Hacking Forum Listing", "extracted": "banxico_spei_config.json", "summary": "Active credentials and payment API endpoints verified."},
+    },
+    {
+        "id": "TR-2026-060",
+        "date": "2026-06-22",
+        "actor": "Storm-0811",
+        "victim": "Yacimientos Petrolíferos Fiscales Bolivianos (YPFB)",
+        "sector": "Energy",
+        "country": "Bolivia",
+        "riskScore": 91,
+        "confidence": 88,
+        "status": "Critical",
+        "verificationStatus": "Verified",
+        "whyCritical": {"credentialsExposed": True, "financialRecordsAffected": False, "knownRansomwareActor": False, "publicEvidenceAvailable": True},
+        "businessImpact": "Potential threat to national gas distribution systems and critical infrastructure controls.",
+        "technicalImpact": "Exposition of SCADA network credentials and OT server configuration maps via a public repository.",
+        "actions": {"immediate": "Deactivate compromised SCADA admin credentials.", "hours24": "Force password updates for all OT operators.", "days7": "Perform security review of pipeline telemetry systems."},
+        "evidence": {"source": "GitHub Public Leak Repository", "extracted": "ypfb_scada_access.txt", "summary": "Active SCADA administration access codes verified."},
+    },
+    {
+        "id": "TR-2026-061",
+        "date": "2026-06-22",
+        "actor": "LockBit 3.0",
+        "victim": "Petrobras",
+        "sector": "Energy",
+        "country": "Brazil",
+        "riskScore": 89,
+        "confidence": 92,
+        "status": "High",
+        "verificationStatus": "Pending Review",
+        "whyCritical": {"credentialsExposed": True, "financialRecordsAffected": False, "knownRansomwareActor": True, "publicEvidenceAvailable": True},
+        "businessImpact": "Exposure of proprietary geological exploration data and employee directories.",
+        "technicalImpact": "Exfiltration of 400GB of intranet databases, containing credentials, contracts, and internal audits.",
+        "actions": {"immediate": "Revoke active directory accounts listed in breach.", "hours24": "Scan internal networks for ransomware activity indicators.", "days7": "Upgrade end-to-end encryption for exploration backups."},
+        "evidence": {"source": "LockBit Ransomware Disclosure Blog", "extracted": "petrobras_internal_directory.csv", "summary": "Sample data matching real employee directory confirmed."},
+    },
+    {
+        "id": "TR-2026-062",
+        "date": "2026-06-21",
+        "actor": "ShinyHunters",
+        "victim": "Claro Colombia",
+        "sector": "Telecom",
+        "country": "Colombia",
+        "riskScore": 86,
+        "confidence": 90,
+        "status": "High",
+        "verificationStatus": "Verified",
+        "whyCritical": {"credentialsExposed": True, "financialRecordsAffected": True, "knownRansomwareActor": False, "publicEvidenceAvailable": True},
+        "businessImpact": "Potential privacy lawsuit and regulatory penalties for customer PII exposure.",
+        "technicalImpact": "Customer account billing details, IMEI numbers, and email databases leaked via open Elasticsearch clusters.",
+        "actions": {"immediate": "Secure misconfigured Elasticsearch cluster.", "hours24": "Initiate data breach notification to subscribers.", "days7": "Implement automated configuration compliance checks."},
+        "evidence": {"source": "BreachForums Database Listing", "extracted": "claro_col_billing.csv", "summary": "Active client emails and phone numbers verified."},
+    },
+    {
+        "id": "TR-2026-063",
+        "date": "2026-06-21",
+        "actor": "Storm-0991",
+        "victim": "Ministerio de Economía y Finanzas de Perú (MEF)",
+        "sector": "Government",
+        "country": "Peru",
+        "riskScore": 87,
+        "confidence": 89,
+        "status": "High",
+        "verificationStatus": "Verified",
+        "whyCritical": {"credentialsExposed": True, "financialRecordsAffected": False, "knownRansomwareActor": False, "publicEvidenceAvailable": True},
+        "businessImpact": "Compromise of state financial management portals and public sector payroll structures.",
+        "technicalImpact": "Exfiltration of active administrator login credentials for SIAF (Integrated Financial Administration System).",
+        "actions": {"immediate": "Deactivate exposed MEF administration credentials.", "hours24": "Enable mandatory 2FA on all public administration portals.", "days7": "Audit logins for external administrative accesses."},
+        "evidence": {"source": "DarkWeb PasteBin", "extracted": "mef_pe_siaf_logins.txt", "summary": "Active administrator credentials verified."},
+    },
+    {
         "id": "TR-2026-049",
         "date": "2026-06-20",
         "actor": "LockBit 3.0",
@@ -143,6 +228,57 @@ THREATS = [
         "actions": {"immediate": "Deactivate Citrix accounts.", "hours24": "Patch Citrix ADC.", "days7": "Enforce MFA."},
         "evidence": {"source": "ALPHV Onion Leak Site", "extracted": "lab results xlsx", "summary": "Active patient data verified."},
     },
+    {
+        "id": "TR-2026-050",
+        "date": "2026-06-21",
+        "actor": "LulzSec Latin America",
+        "victim": "Argentina Health Ministry",
+        "sector": "Government",
+        "country": "Argentina",
+        "riskScore": 85,
+        "confidence": 90,
+        "status": "High",
+        "verificationStatus": "Verified",
+        "whyCritical": {"credentialsExposed": True, "financialRecordsAffected": False, "knownRansomwareActor": False, "publicEvidenceAvailable": True},
+        "businessImpact": "Exposition of citizen health insurance records.",
+        "technicalImpact": "Exfiltration of SQL databases via vulnerable API endpoint.",
+        "actions": {"immediate": "Revoke exposed API keys.", "hours24": "Implement rate limiting.", "days7": "Perform API security audit."},
+        "evidence": {"source": "BreachForums Database Post", "extracted": "argentina_gov_health.sql", "summary": "Citizen PII exposure verified."},
+    },
+    {
+        "id": "TR-2026-051",
+        "date": "2026-06-21",
+        "actor": "Medusa",
+        "victim": "Banco del Estado de Chile",
+        "sector": "Finance",
+        "country": "Chile",
+        "riskScore": 90,
+        "confidence": 92,
+        "status": "Critical",
+        "verificationStatus": "Verified",
+        "whyCritical": {"credentialsExposed": True, "financialRecordsAffected": True, "knownRansomwareActor": True, "publicEvidenceAvailable": True},
+        "businessImpact": "Potential threat to user transaction services.",
+        "technicalImpact": "Ransomware deployment on back-office servers.",
+        "actions": {"immediate": "Isolate affected subnets.", "hours24": "Restore backups from off-site storage.", "days7": "Deploy endpoint detection (EDR) agents."},
+        "evidence": {"source": "Medusa Onion Leak Site", "extracted": "banco_chile_transact.zip", "summary": "Sample client files verified."},
+    },
+    {
+        "id": "TR-2026-052",
+        "date": "2026-06-22",
+        "actor": "REvil (Reborn)",
+        "victim": "Bolivian National Telecommunications (ENTEL)",
+        "sector": "Telecom",
+        "country": "Bolivia",
+        "riskScore": 89,
+        "confidence": 85,
+        "status": "High",
+        "verificationStatus": "Pending Review",
+        "whyCritical": {"credentialsExposed": False, "financialRecordsAffected": False, "knownRansomwareActor": True, "publicEvidenceAvailable": True},
+        "businessImpact": "Interruption in telecommunication services.",
+        "technicalImpact": "VMware ESXi hosts encrypted.",
+        "actions": {"immediate": "Shutdown uninfected ESXi hosts.", "hours24": "Review firewall access logs.", "days7": "Update hypervisor host security patches."},
+        "evidence": {"source": "REvil Blog Listing", "extracted": "entel_configs.tar.gz", "summary": "Router configuration files verified."},
+    },
 ]
 
 DARKWEB_LEAKS = [
@@ -183,11 +319,10 @@ def incident_to_api(row: Incident) -> dict:
 
 
 async def seed_database(session: AsyncSession) -> None:
-    existing = await session.scalar(select(Incident.id).limit(1))
-    if existing:
-        return
-
     for t in THREATS:
+        existing = await session.get(Incident, t["id"])
+        if existing:
+            continue
         payload = {k: v for k, v in t.items() if k not in ("id", "date", "actor", "victim", "sector", "country", "riskScore", "confidence", "status", "verificationStatus")}
         session.add(
             Incident(
@@ -206,6 +341,10 @@ async def seed_database(session: AsyncSession) -> None:
         )
 
     for a in AUDITS:
+        existing_audit = await session.scalar(select(AuditLog.id).filter_by(analyst=a["analyst"], action=a["action"], reason=a["reason"]).limit(1))
+        if existing_audit:
+            continue
         session.add(AuditLog(analyst=a["analyst"], action=a["action"], reason=a["reason"]))
 
     await session.commit()
+

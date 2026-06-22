@@ -1,370 +1,176 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/LeakGuard-v3.3-22d3ee?style=for-the-badge&labelColor=0f172a" alt="LeakGuard" />
+  <img src="https://img.shields.io/badge/LeakGuard-v3.4-00F5FF?style=for-the-badge&labelColor=040B14&borderColor=00F5FF" alt="LeakGuard" />
+  <img src="https://img.shields.io/badge/Gemini_2.5_Flash-Inside-7C3AED?style=for-the-badge&labelColor=040B14" alt="Gemini" />
 </p>
 
-<h1 align="center">LeakGuard</h1>
+<h1 align="center">🛡️ LeakGuard</h1>
 
 <p align="center">
-  Plataforma de <strong>Threat Intelligence</strong> y verificación de filtraciones OSINT con credenciales censuradas, proxy seguro y análisis de riesgo.
+  Plataforma unificada de <strong>Threat Intelligence</strong> y verificación de filtraciones OSINT de grado corporativo. Diseñada con proxy seguro, análisis de riesgo heurístico, encriptación local y un asistente inteligente basado en <strong>Gemini 2.5 Flash</strong>.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-14-000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
-  <img src="https://img.shields.io/badge/FastAPI-Python%203.11-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white" alt="Redis" />
-  <img src="https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white" alt="pytest" />
-  <img src="https://img.shields.io/badge/Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white" alt="Chart.js" />
-  <img src="https://img.shields.io/badge/Leaflet-199900?style=flat-square&logo=leaflet&logoColor=white" alt="Leaflet" />
+  <img src="https://img.shields.io/badge/Next.js_14-App_Router-000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/FastAPI-Python_3.11-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Data_Seed-316192?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Redis-Mock_Engine-DC382D?style=flat-square&logo=redis&logoColor=white" alt="Redis" />
+  <img src="https://img.shields.io/badge/pytest-28_unit_tests-0A9EDC?style=flat-square&logo=pytest&logoColor=white" alt="pytest" />
+  <img src="https://img.shields.io/badge/Lucide_Icons-Premium_UI-7C3AED?style=flat-square" alt="Lucide" />
 </p>
 
 ---
 
-## Tabla de contenidos
+## 🗂️ Tabla de Contenidos
 
 - [Descripción](#descripción)
-- [Stack tecnológico](#stack-tecnológico)
+- [Novedades en v3.4.0](#novedades-en-v340)
+- [Stack Tecnológico](#stack-tecnológico)
 - [Arquitectura](#arquitectura)
-- [Inicio rápido](#inicio-rápido)
-- [Configuración](#configuración)
-- [Módulos](#módulos)
-- [API REST](#api-rest)
-- [Testing](#testing)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Legacy v1](#legacy-v1)
-- [Documentación adicional](#documentación-adicional)
-- [Seguridad](#seguridad)
+- [Inicio Rápido](#inicio-rápido)
+- [Configuración de Entorno](#configuración-de-entorno)
+- [Módulos de la Plataforma](#módulos-de-la-plataforma)
+- [API Endpoints](#api-endpoints)
+- [Testing & Integración Continua](#testing--integración-continua)
+- [Seguridad & Privacidad](#seguridad--privacidad)
 
 ---
 
-## Descripción
+## 📖 Descripción
 
-**LeakGuard** es una plataforma web orientada a analistas de ciberseguridad. Permite:
+**LeakGuard** proporciona a analistas y equipos de ciberseguridad una consola centralizada para monitorear y mitigar filtraciones de credenciales. 
 
-- Auditar exposición de activos digitales (dominios, correos, teléfonos) contra índices OSINT.
-- Visualizar incidentes de threat intelligence con scoring de riesgo y verificación humana.
-- Consultar filtraciones recientes, dark web/foros y feed de ransomware en vivo.
-- Analizar amenazas con RAG (OpenAI GPT-4o-mini + FAISS offline).
-- Búsqueda con **K-Anonymity** (hash parcial SHA-256, estilo HIBP).
-
-El token de la API OSINT de pago **nunca se expone al navegador**: el frontend habla con FastAPI, que actúa como proxy seguro.
+### Características principales:
+- **Proxy Seguro:** El navegador del cliente nunca interactúa directamente con proveedores OSINT de pago, previniendo fugas de claves de API.
+- **Iconografía Profesional y Limpia:** Interfaz corporativa libre de emojis basada exclusivamente en componentes **Lucide-react** con badges de países (`[AR]`, `[CL]`, `[BO]`, etc.).
+- **Asistente IA (Gemini 2.5 Flash):** Chat interactivo para profundizar en mitigaciones e impacto técnico directamente con la IA de Google mediante su API REST nativa.
+- **K-Anonymity:** Buscador seguro mediante hash SHA-256 truncado para proteger la privacidad del usuario al escanear.
 
 ---
 
-## Stack tecnológico
+## 🔥 Novedades en v3.4.0
+
+1. **Google Gemini 2.5 Flash Nativo:** Eliminación de los wrappers de OpenAI SDK para conectar directamente mediante REST (`httpx`) con el endpoint oficial de Google Generative Language.
+2. **Chat Assistant en AI Safety:** Panel conversacional interactivo para consultar detalles técnicos del incidente RAG (FAISS) con Gemini en tiempo real.
+3. **Expansión LATAM:** Seeding inicial extendido con filtraciones principales para **Bolivia (YPFB)**, **Brasil (Petrobras)**, **Perú (MEF)**, **Colombia (Claro)** y **México (Banxico)**.
+4. **Emoji-Free UI:** Reemplazo integral de emojis en tablas, popups de mapas y selectores por badges de diseño premium.
+5. **Cero Fugas de Auth:** Control de peticiones asíncronas para evitar llamadas 401 a la API antes de resolver el estado de autenticación (`useAuth()`).
+6. **Bypass de Bcrypt local:** Solución definitiva para incompatibilidades en registro local mediante `bcrypt` puro en backend en reemplazo de `passlib` obsoleto.
+
+---
+
+## 💻 Stack Tecnológico
 
 | Capa | Tecnología |
 |------|------------|
 | **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Vitest |
 | **Backend** | Python 3.11 + FastAPI (async nativo), pytest |
-| **Base de datos** | PostgreSQL (usuarios, incidentes, auditoría, consultas) |
-| **Cache / sesiones** | Redis (scraps, feed ransomware, sesiones) |
-| **Scraping** | Playwright + BeautifulSoup + aiohttp + ransomware.live API |
-| **Inteligencia artificial** | OpenAI GPT-4o-mini + FAISS (RAG local offline) |
-| **Visualización** | Chart.js (gráficos) + Leaflet (mapas) |
-| **CI** | GitHub Actions (pytest + vitest + lint) |
+| **Base de Datos** | PostgreSQL (Auditoría, Incidentes, Logs de consultas y Usuarios) |
+| **Cache & Colas** | Redis (Cache de feed ransomware y estado de APIs) |
+| **Inteligencia Artificial** | Gemini 2.5 Flash + FAISS (RAG Local y Offline en fallback) |
+| **Monitoreo & OSINT** | Playwright + BeautifulSoup + leakosintapi.com |
 
 ---
 
-## Arquitectura
+## 🏗️ Arquitectura
 
 ```mermaid
-flowchart LR
-    subgraph Browser["Navegador"]
-        UI["Next.js 14 UI"]
+flowchart TD
+    subgraph Cliente["Frontend (Next.js 14)"]
+        UI["UI Console"]
+        Chat["Gemini 2.5 Chat UI"]
     end
 
-    subgraph Backend["FastAPI"]
-        API["/api/v1/*"]
+    subgraph Servidor["Backend (FastAPI)"]
+        API["REST Routes"]
         OSINT["Servicio OSINT"]
-        AI["RAG + OpenAI"]
-        SCR["Scraping + Scheduler"]
-        KA["K-Anonymity"]
+        AI["RAG Engine (FAISS)"]
+        DirectGemini["REST Gemini Client"]
     end
 
-    subgraph Data["Datos"]
+    subgraph BD["Persistencia"]
         PG["PostgreSQL"]
-        RD["Redis"]
+        RD["Redis Cache"]
     end
 
-    subgraph External["Externo"]
+    subgraph Proveedores["Servicios Externos"]
         LO["leakosintapi.com"]
-        XON["xposedornot.com"]
-        RWL["ransomware.live"]
-        OAI["OpenAI API"]
+        GEM["Gemini 2.5 API"]
     end
 
-    UI -->|"JWT + REST"| API
+    UI --> API
+    Chat --> API
     API --> PG
     API --> RD
     OSINT --> LO
-    OSINT --> XON
-    AI --> OAI
-    SCR --> RWL
-    SCR --> RD
-    KA --> PG
+    AI --> DirectGemini
+    DirectGemini --> GEM
 ```
 
 ---
 
-## Inicio rápido
+## 🚀 Inicio Rápido
 
-### Requisitos
+### Opción A — Ejecución con Docker (Recomendado)
 
-- **Node.js** 20+
-- **Python** 3.11+
-- **Docker** (recomendado para PostgreSQL + Redis)
-- Token **OSINT** (LeakOsint) en `backend/.env`
+1. Crea las variables de entorno en la raíz copiando el archivo `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Configura tu token OSINT y tu clave API de Gemini:
+   ```env
+   OSINT_TOKEN=tu_token_leakosint
+   OPENAI_API_KEY=tu_clave_api_gemini
+   ```
+3. Construye y levanta los servicios:
+   ```bash
+   docker compose up --build
+   ```
+4. Accede a la interfaz web en: **`http://localhost:3000`**
 
-### Opción A — Docker (recomendado)
+### Opción B — Desarrollo Local Manual
 
-```bash
-# Desde la raíz del repo
-cp .env.example .env
-# Editar .env → OSINT_TOKEN=tu-token
-
-docker compose up --build
-```
-
-| Servicio | URL |
-|----------|-----|
-| Frontend | http://localhost:3000 |
-| Backend / Swagger | http://localhost:8000/docs |
-| PostgreSQL | localhost:5432 |
-| Redis | localhost:6379 |
-
-### Opción B — Desarrollo local
-
-**1. Infraestructura**
-
+**1. Levantar PostgreSQL y Redis:**
 ```bash
 docker compose up postgres redis -d
 ```
 
-**2. Backend**
-
+**2. Iniciar el Backend:**
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate   # Windows: .\.venv\Scripts\activate
+source .venv/bin/activate # Windows: .\.venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
-# Editar backend/.env con OSINT_TOKEN
+# Edita tu archivo .env con las API Keys correspondientes
 uvicorn app.main:app --reload --port 8000
 ```
 
-**3. Frontend**
-
+**3. Iniciar el Frontend:**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-**4. Todo en uno (raíz)**
+---
 
-```bash
-npm install
-npm run dev
-```
+## ⚙️ Configuración de Entorno
 
-### Acceso demo
-
-1. Abrir http://localhost:3000
-2. Ir a **Login** → **Demo bypass (sin registro)**
-3. Explorar Dashboard, Exposure Check, Admin y AI Safety
+### Backend `.env`
+- `OSINT_TOKEN`: Token de acceso para `leakosintapi.com`.
+- `OPENAI_API_KEY`: Clave de API de Gemini 2.5 Flash (soporta prefijos `AQ.` e `AIzaSy`).
+- `DATABASE_URL`: URI de conexión asíncrona de PostgreSQL (`postgresql+asyncpg://`).
+- `REDIS_URL`: URI de conexión a Redis (o `mock` para desarrollo sin Redis).
 
 ---
 
-## Configuración
+## 🔒 Seguridad & Privacidad
 
-### Backend (`backend/.env`)
-
-| Variable | Requerida | Descripción |
-|----------|-----------|-------------|
-| `OSINT_TOKEN` | Sí (Exposure Check) | Token LeakOsint — **solo servidor** |
-| `DATABASE_URL` | Sí | `postgresql+asyncpg://leakguard:leakguard@localhost:5432/leakguard` |
-| `REDIS_URL` | Sí | `redis://localhost:6379/0` |
-| `SECRET_KEY` | Sí | Clave JWT (cambiar en producción) |
-| `OPENAI_API_KEY` | No | GPT-4o-mini para AI Safety (fallback offline sin key) |
-| `CORS_ORIGINS` | No | Orígenes permitidos (default: localhost:3000) |
-
-### Frontend
-
-| Variable | Descripción |
-|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | URL del backend (default: `http://localhost:8000`). Next.js reescribe `/api/*` hacia el backend. |
-
-### Docker Compose (`.env` raíz)
-
-```env
-OSINT_TOKEN=tu-token
-OPENAI_API_KEY=sk-...   # opcional
-```
+1. **Anonimato en Búsquedas:** Las consultas de escaneo almacenadas en PostgreSQL se registran únicamente como hash SHA-256 (`query_hash`).
+2. **Censura en Servidor:** Las contraseñas y credenciales sensibles devueltas se ofuscan en el backend (`*****`) antes de ser enviadas al navegador del cliente.
+3. **Control de JWT:** Sesión protegida y autenticación robusta mediante firmas HS256 locales.
 
 ---
-
-## Módulos
-
-| Módulo | Ruta | Descripción |
-|--------|------|-------------|
-| **Landing** | `/` | Presentación del producto |
-| **Login / Registro** | `/login` | JWT + alerta XposedOrNot al iniciar sesión |
-| **Dashboard** | `/dashboard` | KPIs, Chart.js, mapa Leaflet, feed de amenazas |
-| **Exposure Check** | `/exposure` | Escaneo OSINT censurado + % riesgo + recomendaciones |
-| **Threat Details** | `/threats/[id]` | Análisis forense por incidente |
-| **Admin Panel** | `/admin` | Cola de verificación humana + audit log (PostgreSQL) |
-| **AI Safety** | `/ai-safety` | Métricas de transparencia + análisis RAG |
-
-### Exposure Check incluye
-
-- Porcentaje de riesgo calculado (fórmula ponderada en backend, score 0–99)
-- Conteo total de logins / credenciales indexadas
-- Tabla completa de registros devueltos por la API (credenciales censuradas)
-- Recomendaciones de mitigación (inmediato, 24 h, 7 días)
-- Merge con XposedOrNot para búsquedas por email
-- Historial de consultas en PostgreSQL (solo `search_type` + hash, sin query en claro)
-- K-Anonymity: búsqueda por prefijo de hash SHA-256
-
-### Recolección de inteligencia
-
-- Scraper de **ransomware.live** cada 15 minutos → cache Redis
-- Endpoint `GET /api/v1/dashboard/ransomware-feed` para el dashboard
-- Scraping genérico por URL (BeautifulSoup / Playwright) vía `POST /api/v1/scrape`
-
----
-
-## API REST
-
-Documentación interactiva: http://localhost:8000/docs
-
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | `/health` | — | Health check |
-| POST | `/api/v1/auth/register` | — | Registro + alerta de filtración |
-| POST | `/api/v1/auth/login` | — | Login JWT |
-| POST | `/api/v1/auth/demo` | — | Modo demo |
-| GET | `/api/v1/auth/me` | Bearer | Usuario actual |
-| GET | `/api/v1/threats` | — | Lista de incidentes |
-| GET | `/api/v1/threats/{id}` | — | Detalle de incidente |
-| GET | `/api/v1/threats/admin/queue` | Bearer | Cola admin |
-| GET | `/api/v1/threats/admin/audits` | Bearer | Audit log |
-| POST | `/api/v1/threats/{id}/verify` | Bearer | Verificar / rechazar |
-| POST | `/api/v1/exposure/scan` | opcional | Escaneo OSINT |
-| GET | `/api/v1/exposure/consulted` | opcional | Historial de consultas (sin PII) |
-| GET | `/api/v1/exposure/k-anon/{prefix}` | — | K-Anonymity: hashes por prefijo |
-| POST | `/api/v1/exposure/breach-check` | — | XposedOrNot por email |
-| GET | `/api/v1/exposure/breaches-recent` | — | Filtraciones públicas recientes |
-| GET | `/api/v1/dashboard/kpis` | — | KPIs del dashboard |
-| GET | `/api/v1/dashboard/charts` | — | Datos para Chart.js |
-| GET | `/api/v1/dashboard/darkweb` | — | Panel dark web / foros |
-| GET | `/api/v1/dashboard/ransomware-feed` | — | Víctimas recientes (ransomware.live) |
-| GET | `/api/v1/dashboard/ai-safety` | — | Métricas AI Safety |
-| POST | `/api/v1/ai/analyze` | Bearer | Análisis RAG |
-| POST | `/api/v1/scrape` | Bearer | Scraping (BS4 / Playwright) |
-
----
-
-## Testing
-
-### Backend (pytest)
-
-```bash
-cd backend
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# Unit tests (sin PostgreSQL)
-pytest tests/test_exposure.py tests/test_censor.py tests/test_k_anonymity.py tests/test_scraping.py -v
-
-# Todos los tests (requiere PostgreSQL)
-docker compose up postgres redis -d
-pytest tests/ -v
-```
-
-**Cobertura actual:** 28 unit tests + 9 integration/smoke tests.
-
-### Frontend (vitest)
-
-```bash
-cd frontend
-npm install
-npm test
-```
-
-### CI
-
-GitHub Actions ejecuta pytest + vitest + lint en cada push/PR a `main` (ver `.github/workflows/ci.yml`).
-
----
-
-## Estructura del proyecto
-
-```
-leakguard/
-├── frontend/                 # Next.js 14 + Tailwind + shadcn/ui
-│   ├── src/app/              # App Router (pages)
-│   ├── src/components/       # UI, charts, layout
-│   ├── src/lib/api.ts        # Cliente REST
-│   └── src/lib/k-anonymity.ts
-├── backend/                  # FastAPI
-│   ├── app/
-│   │   ├── api/routes/       # auth, threats, exposure, dashboard, ai
-│   │   ├── core/             # config, DB, Redis, JWT, scheduler
-│   │   ├── models/           # SQLAlchemy (User, Incident, ConsultedScan, …)
-│   │   ├── services/         # osint, breach, censor, exposure, scraping, ai_rag, k_anonymity
-│   │   └── data/seed.py      # Datos iniciales
-│   ├── tests/                # pytest (exposure, censor, routes, smoke, scraping)
-│   ├── conftest.py
-│   └── requirements.txt
-├── legacy/                   # v1: vanilla JS + Express proxy + Firebase
-├── .cursor/rules/            # Reglas del agente Cursor
-├── .github/workflows/        # CI (pytest + vitest)
-├── docker-compose.yml
-├── SDD.md                    # Software Design Document (v3.2)
-├── SDD-plan.md               # Backlog de evolución y tareas
-├── CHANGELOG.md
-└── README.md
-```
-
----
-
-## Legacy v1
-
-La versión anterior (HTML estático + Express + Firebase) está en `legacy/`:
-
-```bash
-npm run dev:legacy
-# → http://localhost:1337
-```
-
-Ver [legacy/README.md](legacy/README.md).
-
----
-
-## Documentación adicional
-
-| Archivo | Contenido |
-|---------|-----------|
-| [SDD.md](SDD.md) | Diseño del sistema, módulos (§1–10) y roadmap |
-| [SDD-plan.md](SDD-plan.md) | Backlog de evolución con tareas ejecutables (Fases B–E) |
-| [CHANGELOG.md](CHANGELOG.md) | Historial de cambios (semver) |
-| [backend/README.md](backend/README.md) | Guía del API FastAPI |
-| [frontend/README.md](frontend/README.md) | Guía del frontend Next.js |
-
----
-
-## Seguridad
-
-- `OSINT_TOKEN` solo en `backend/.env` — **nunca** en el frontend ni en Git.
-- Contraseñas, emails y teléfonos censurados en el servidor antes de enviar al cliente.
-- JWT para autenticación; Redis para cache de sesiones y scraps.
-- **K-Anonymity:** consultas almacenadas como hash SHA-256; endpoint `/k-anon/{prefix}` no expone queries en claro.
-- Historial `consulted_scans` guarda solo `search_type` + `query_hash` (no el valor buscado).
-- `.env`, `backend/.env`, `backend/.venv/` y `legacy/proxy/.env` están en `.gitignore`.
-
----
-
 <p align="center">
-  <strong>LeakGuard</strong> — Inteligencia verificada y proxy seguro OSINT.
+  Diseñado con pasión para mitigar riesgos en Latinoamérica. <strong>LeakGuard © 2026</strong>.
 </p>

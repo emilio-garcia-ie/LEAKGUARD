@@ -9,6 +9,11 @@ import numpy as np
 
 from app.core.config import settings
 
+try:
+    import faiss
+except ImportError:
+    faiss = None
+
 _INDEX_DIR = Path(__file__).resolve().parent.parent / "data" / "faiss_index"
 _index = None
 _docs: list[str] = []
@@ -16,12 +21,7 @@ _docs: list[str] = []
 
 def _ensure_index(docs: list[str]) -> None:
     global _index, _docs
-    if _index is not None:
-        return
-
-    try:
-        import faiss
-    except ImportError:
+    if _index is not None or faiss is None:
         return
 
     _docs = docs
@@ -40,12 +40,11 @@ def _retrieve(query: str, k: int = 3) -> list[str]:
     if not _docs:
         return []
     _ensure_index(_docs)
-    if _index is None:
+    if _index is None or faiss is None:
         return _docs[:k]
     dim = 384
     rng = np.random.default_rng(abs(hash(query)) % (2**32))
     q = rng.standard_normal(dim).astype("float32").reshape(1, -1)
-    import faiss
 
     faiss.normalize_L2(q)
     _, indices = _index.search(q, min(k, len(_docs)))
@@ -74,28 +73,58 @@ async def analyze_threat(context: str, question: str | None = None) -> dict[str,
             "confidence": 72,
         }
 
+    is_gemini = False
     try:
-        from openai import AsyncOpenAI
+        api_key = settings.openai_api_key
+        is_gemini = bool(api_key and (api_key.startswith("AIzaSy") or api_key.startswith("AQ.")))
 
-        client = AsyncOpenAI(api_key=settings.openai_api_key)
-        prompt = (
-            "Eres un analista de threat intelligence. Responde en español, conciso.\n"
-            f"Contexto RAG: {json.dumps(retrieved, ensure_ascii=False)}\n"
-            f"Incidente: {context}\n"
-            f"Pregunta: {question or 'Resume riesgo e impacto.'}"
-        )
-        completion = await client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=600,
-        )
-        answer = completion.choices[0].message.content or ""
-        return {"model": "gpt-4o-mini", "answer": answer, "sources": retrieved, "confidence": 88}
+        if is_gemini:
+            import httpx
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+            prompt = (
+                "Eres un analista de threat intelligence. Responde en español, conciso.\n"
+                f"Contexto RAG: {json.dumps(retrieved, ensure_ascii=False)}\n"
+                f"Incidente: {context}\n"
+                f"Pregunta: {question or 'Resume riesgo e impacto.'}"
+            )
+            payload = {
+                "contents": [
+                    {
+                        "parts": [
+                            {"text": prompt}
+                        ]
+                    }
+                ]
+            }
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=30.0)
+                if resp.status_code != 200:
+                    raise Exception(f"HTTP {resp.status_code}: {resp.text}")
+                data = resp.json()
+                answer = data["candidates"][0]["content"]["parts"][0]["text"]
+                return {"model": "gemini-2.5-flash", "answer": answer, "sources": retrieved, "confidence": 88}
+        else:
+            from openai import AsyncOpenAI
+            client = AsyncOpenAI(api_key=api_key)
+            prompt = (
+                "Eres un analista de threat intelligence. Responde en español, conciso.\n"
+                f"Contexto RAG: {json.dumps(retrieved, ensure_ascii=False)}\n"
+                f"Incidente: {context}\n"
+                f"Pregunta: {question or 'Resume riesgo e impacto.'}"
+            )
+            completion = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=600,
+            )
+            answer = completion.choices[0].message.content or ""
+            return {"model": "gpt-4o-mini", "answer": answer, "sources": retrieved, "confidence": 88}
     except Exception as exc:
+        model_name = "gemini-2.5-flash" if is_gemini else "gpt-4o-mini"
         return {
-            "model": "gpt-4o-mini",
+            "model": model_name,
             "error": str(exc),
-            "answer": "No se pudo contactar OpenAI. " + " ".join(retrieved),
+            "answer": f"No se pudo contactar la IA ({str(exc)}). " + " ".join(retrieved),
             "sources": retrieved,
             "confidence": 60,
         }
