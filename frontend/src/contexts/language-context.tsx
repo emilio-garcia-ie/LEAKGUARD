@@ -17,7 +17,20 @@ export type Translations = {
   nav_exposure: string;
   nav_admin: string;
   nav_ai_safety: string;
+  nav_resources: string;
   nav_logout: string;
+  // OSINT Resources Page
+  resources_title: string;
+  resources_subtitle: string;
+  resources_search_placeholder: string;
+  category_all: string;
+  category_breach_engines: string;
+  category_threat_actors: string;
+  category_threat_maps: string;
+  category_description_breach: string;
+  category_description_actors: string;
+  category_description_maps: string;
+  no_resources_found: string;
   // Landing
   landing_login_btn: string;
   landing_hero_badge: string;
@@ -100,6 +113,7 @@ export type Translations = {
   col_category: string;
   col_country: string;
   consulted_title: string;
+  consulted_clear: string;
   darkweb_title: string;
   recent_breaches_title: string;
   no_consulted: string;
@@ -205,6 +219,18 @@ const translations: Record<Lang, Translations> = {
     nav_admin: "Administración",
     nav_ai_safety: "Seguridad IA",
     nav_logout: "Cerrar sesión",
+    nav_resources: "Fuentes OSINT",
+    resources_title: "Hub de Recursos OSINT",
+    resources_subtitle: "Buscadores de filtraciones, mapas de ciberamenazas en vivo y bases de datos de actores de amenazas",
+    resources_search_placeholder: "Buscar herramientas o descripciones...",
+    category_all: "Todos",
+    category_breach_engines: "Buscadores de Filtraciones",
+    category_threat_actors: "Actores de Amenazas",
+    category_threat_maps: "Mapas de Amenazas",
+    category_description_breach: "Herramientas para verificar si tus credenciales o datos personales han sido comprometidos.",
+    category_description_actors: "Bases de datos y enciclopedias sobre grupos APT, ciberdelincuentes y sus tácticas.",
+    category_description_maps: "Visualización en tiempo real de ciberataques, tráfico malicioso y alertas a nivel global.",
+    no_resources_found: "No se encontraron recursos con los criterios de búsqueda.",
     landing_login_btn: "Ingresar",
     landing_hero_badge: "Monitoreo en tiempo real activo",
     landing_hero_title: "Protege tu información antes de que sea demasiado tarde",
@@ -284,6 +310,7 @@ const translations: Record<Lang, Translations> = {
     col_category: "Categoría",
     col_country: "País",
     consulted_title: "Consultas realizadas",
+    consulted_clear: "Limpiar",
     darkweb_title: "Dark Web / Foros clandestinos",
     recent_breaches_title: "Filtraciones públicas recientes",
     no_consulted: "Aún no realizaste consultas.",
@@ -378,6 +405,18 @@ const translations: Record<Lang, Translations> = {
     nav_admin: "Admin",
     nav_ai_safety: "AI Safety",
     nav_logout: "Logout",
+    nav_resources: "OSINT Sources",
+    resources_title: "OSINT Resources Hub",
+    resources_subtitle: "Breach search engines, live cyber threat maps, and threat actor databases",
+    resources_search_placeholder: "Search tools or descriptions...",
+    category_all: "All",
+    category_breach_engines: "Breach Search Engines",
+    category_threat_actors: "Threat Actor Search",
+    category_threat_maps: "Threat Maps",
+    category_description_breach: "Tools to check if your credentials or personal data have been compromised.",
+    category_description_actors: "Databases and encyclopedias regarding APT groups, cybercriminals, and their tactics.",
+    category_description_maps: "Real-time visualization of cyberattacks, malicious traffic, and global alerts.",
+    no_resources_found: "No resources found matching the search criteria.",
     landing_login_btn: "Login",
     landing_hero_badge: "Real-time monitoring active",
     landing_hero_title: "Protect your data before it's too late",
@@ -457,6 +496,7 @@ const translations: Record<Lang, Translations> = {
     col_category: "Category",
     col_country: "Country",
     consulted_title: "Queries Made",
+    consulted_clear: "Clear",
     darkweb_title: "Dark Web / Underground Forums",
     recent_breaches_title: "Recent Public Breaches",
     no_consulted: "No queries made yet.",
@@ -551,6 +591,18 @@ const translations: Record<Lang, Translations> = {
     nav_admin: "Администрация",
     nav_ai_safety: "Безопасность ИИ",
     nav_logout: "Выйти",
+    nav_resources: "Источники OSINT",
+    resources_title: "Центр ресурсов OSINT",
+    resources_subtitle: "Поисковые системы утечек, карты киберугроз в реальном времени и базы данных кибергруппировок",
+    resources_search_placeholder: "Поиск инструментов или описаний...",
+    category_all: "Все",
+    category_breach_engines: "Поиск утечек данных",
+    category_threat_actors: "Субъекты угроз",
+    category_threat_maps: "Карты угроз",
+    category_description_breach: "Инструменты для проверки компрометации ваших учётных данных или личных данных.",
+    category_description_actors: "Базы данных и энциклопедии о хакерских группировках, киберпреступниках и их тактиках.",
+    category_description_maps: "Визуализация кибератак, вредоносного трафика и глобальных предупреждений в реальном времени.",
+    no_resources_found: "Инструменты по вашему запросу не найдены.",
     landing_login_btn: "Войти",
     landing_hero_badge: "Мониторинг в реальном времени активен",
     landing_hero_title: "Защитите свои данные, пока не стало слишком поздно",
@@ -630,6 +682,7 @@ const translations: Record<Lang, Translations> = {
     col_category: "Категория",
     col_country: "Страна",
     consulted_title: "Выполненные запросы",
+    consulted_clear: "Очистить",
     darkweb_title: "Тёмная сеть / Подпольные форумы",
     recent_breaches_title: "Недавние публичные утечки",
     no_consulted: "Запросов пока нет.",
@@ -724,6 +777,18 @@ const translations: Record<Lang, Translations> = {
     nav_admin: "ניהול",
     nav_ai_safety: "בטיחות בינה מלאכותית",
     nav_logout: "התנתק",
+    nav_resources: "מקורות OSINT",
+    resources_title: "מרכז משאבי OSINT",
+    resources_subtitle: "מנועי חיפוש דליפות מידע, מפות איומי סייבר בזמן אמת ומאגרי מידע על תוקפים",
+    resources_search_placeholder: "חפש כלים או תיאורים...",
+    category_all: "הכל",
+    category_breach_engines: "מנועי חיפוש דליפות",
+    category_threat_actors: "חיפוש תוקפי סייבר",
+    category_threat_maps: "מפות איומים",
+    category_description_breach: "כלים לבדיקה אם אישורי הגישה או המידע האישי שלך נחשפו בדליפות.",
+    category_description_actors: "מאגרי מידע ואנציקלופדיות על קבוצות APT, פושעי סייבר והטקטיקות שלהם.",
+    category_description_maps: "הצגה בזמן אמת של מתקפות סייבר, תעבורה זדונית והתראות גלובליות.",
+    no_resources_found: "לא נמצאו משאבים התואמים את קריטריוני החיפוש.",
     landing_login_btn: "כניסה",
     landing_hero_badge: "ניטור בזמן אמת פעיל",
     landing_hero_title: "הגן על המידע שלך לפני שיהיה מאוחר מדי",
@@ -803,6 +868,7 @@ const translations: Record<Lang, Translations> = {
     col_category: "קטגוריה",
     col_country: "מדינה",
     consulted_title: "שאילתות שבוצעו",
+    consulted_clear: "ניקוי",
     darkweb_title: "רשת אפלה / פורומים מחתרתיים",
     recent_breaches_title: "דליפות ציבוריות אחרונות",
     no_consulted: "עדיין לא בוצעו שאילתות.",

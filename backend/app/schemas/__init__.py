@@ -27,6 +27,7 @@ class ScanRequest(BaseModel):
     mode: str = "domain"
     limit: int = 500
     lang: str = "es"
+    search_target: str = "breaches"
 
 
 class BreachCheckRequest(BaseModel):

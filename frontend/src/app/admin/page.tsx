@@ -21,7 +21,7 @@ export default function AdminPage() {
 
   const load = () => {
     if (!user) return;
-    api.adminQueue().then(setQueue);
+    api.adminQueue().then(setQueue).catch(() => setQueue(null));
     api.audits().then(setAudits).catch(() => setAudits([]));
   };
 

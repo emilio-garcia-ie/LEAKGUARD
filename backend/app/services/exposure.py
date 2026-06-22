@@ -81,6 +81,10 @@ def parse_osint_response(data: dict[str, Any] | None) -> tuple[list[dict[str, An
                 )
 
                 entry_date = extract_osint_date(entry, source_data)
+                if entry_date == "—":
+                    match = re.search(r"\b(19\d{2}|20\d{2})\b", source_name)
+                    if match:
+                        entry_date = match.group(1)
 
                 records.append(
                     {
@@ -95,9 +99,18 @@ def parse_osint_response(data: dict[str, Any] | None) -> tuple[list[dict[str, An
                 )
         elif source_data.get("InfoLeak"):
             stats["databasesWithHits"] += 1
+            fallback_date = "—"
+            match = re.search(r"\b(19\d{2}|20\d{2})\b", source_name)
+            if match:
+                fallback_date = match.group(1)
+            else:
+                raw_date = extract_osint_date({}, source_data)
+                if raw_date != "—":
+                    fallback_date = raw_date
+
             records.append(
                 {
-                    "date": "—",
+                    "date": fallback_date,
                     "title": source_name,
                     "sourceName": source_name,
                     "login": "—",

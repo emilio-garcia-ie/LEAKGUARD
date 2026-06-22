@@ -38,7 +38,14 @@ async def register(body: RegisterRequest, db: Annotated[AsyncSession, Depends(ge
         parsed = parse_breach_check(raw)
         breach_alert = _format_breach_alert(parsed, body.email, is_register=True)
     except Exception:
-        breach_alert = {"type": "info", "message": f"No se pudo verificar filtraciones para {censor_email(body.email)}"}
+        breach_alert = {
+            "type": "info",
+            "message": f"No se pudo verificar filtraciones para {censor_email(body.email)}",
+            "breachCount": 0,
+            "sources": [],
+            "mostRecent": None,
+            "passwordRisk": False,
+        }
 
     token = create_access_token(user.email, {"uid": user.id, "name": user.name})
     return TokenResponse(
@@ -61,7 +68,14 @@ async def login(body: LoginRequest, db: Annotated[AsyncSession, Depends(get_db)]
         parsed = parse_breach_check(raw)
         breach_alert = _format_breach_alert(parsed, body.email, is_register=False)
     except Exception:
-        breach_alert = {"type": "info", "message": f"No se pudo verificar filtraciones para {censor_email(body.email)}"}
+        breach_alert = {
+            "type": "info",
+            "message": f"No se pudo verificar filtraciones para {censor_email(body.email)}",
+            "breachCount": 0,
+            "sources": [],
+            "mostRecent": None,
+            "passwordRisk": False,
+        }
 
     token = create_access_token(user.email, {"uid": user.id, "name": user.name})
     return TokenResponse(
@@ -104,10 +118,18 @@ def _format_breach_alert(parsed: dict, email: str, is_register: bool) -> dict:
         extra = f" (+{parsed['breachCount'] - 4} más)" if parsed["breachCount"] > 4 else ""
         risk = f" · Riesgo XON: {parsed['riskScore']}" if parsed.get("riskScore") is not None else ""
         return {
-            "type": "warning",
+            "type": "danger" if parsed.get("breachCount", 0) >= 5 else "warning",
             "message": f"{'Bienvenido' if is_register else 'Alerta de sesión'}: {censored} aparece en {parsed['breachCount']} filtración(es) — {sample}{extra}{risk}",
+            "breachCount": parsed.get("breachCount", 0),
+            "sources": parsed.get("breaches", []),
+            "mostRecent": parsed.get("mostRecent"),
+            "passwordRisk": parsed.get("breachCount", 0) >= 5,
         }
     return {
         "type": "success",
         "message": f"{'Registro seguro' if is_register else 'Sesión verificada'}: {censored} no aparece en el índice público XposedOrNot.",
+        "breachCount": 0,
+        "sources": [],
+        "mostRecent": None,
+        "passwordRisk": False,
     }

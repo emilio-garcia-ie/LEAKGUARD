@@ -69,6 +69,18 @@ def parse_breach_check(data: dict | None) -> dict:
     elif metrics.get("risk") and len(metrics["risk"]) > 0:
         result["riskScore"] = metrics["risk"][0]
 
+    most_recent = None
+    if isinstance(metrics, dict):
+        breaches_details = metrics.get("breaches_details")
+        if isinstance(breaches_details, list):
+            dates = []
+            for b in breaches_details:
+                if isinstance(b, dict) and b.get("breached_date"):
+                    dates.append(str(b["breached_date"]))
+            if dates:
+                most_recent = max(dates)
+    result["mostRecent"] = most_recent
+
     return result
 
 

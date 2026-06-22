@@ -41,7 +41,7 @@ export default function AiSafetyPage() {
 
   useEffect(() => {
     if (!user) return;
-    api.aiSafety().then(setMetrics);
+    api.aiSafety().then(setMetrics).catch(() => setMetrics(null));
   }, [user]);
 
   const runAnalysis = async () => {

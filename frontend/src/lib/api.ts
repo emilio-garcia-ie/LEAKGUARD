@@ -34,7 +34,16 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { ...authHeaders(), ...init?.headers },
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(parseApiError(data, res.status));
+  if (!res.ok) {
+    if (res.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("leakguard_token");
+      localStorage.removeItem("leakguard_breach_alert");
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    throw new Error(parseApiError(data, res.status));
+  }
   return data as T;
 }
 
@@ -60,14 +69,15 @@ export const api = {
       body: JSON.stringify({ action, reason }),
     }),
   audits: () => request<AuditEntry[]>("/api/v1/threats/admin/audits"),
-  scan: (requestStr: string, mode: string) =>
+  scan: (requestStr: string, mode: string, search_target: string = "breaches") =>
     request<ScanResult>("/api/v1/exposure/scan", {
       method: "POST",
-      body: JSON.stringify({ request: requestStr, mode }),
+      body: JSON.stringify({ request: requestStr, mode, search_target }),
     }),
   kAnon: (prefix: string) =>
     request<{ prefix: string; hashes: string[] }>(`/api/v1/exposure/k-anon/${prefix}`),
   consulted: () => request<ConsultedScan[]>("/api/v1/exposure/consulted"),
+  clearConsulted: () => request<{ status: string; message: string }>("/api/v1/exposure/consulted", { method: "DELETE" }),
   breachesRecent: () => request<{ breaches: unknown }>("/api/v1/exposure/breaches-recent"),
   dashboardKpis: () => request<DashboardKpis>("/api/v1/dashboard/kpis"),
   dashboardCharts: () => request<ChartData>("/api/v1/dashboard/charts"),
@@ -83,7 +93,14 @@ export const api = {
 };
 
 export type User = { id: number; email: string; name: string; role: string; clearance: string };
-export type BreachAlert = { type: string; message: string };
+export type BreachAlert = {
+  type: string;
+  message: string;
+  breachCount?: number;
+  sources?: string[];
+  mostRecent?: string;
+  passwordRisk?: boolean;
+};
 export type Threat = Record<string, unknown> & {
   id: string;
   date: string;
@@ -98,13 +115,41 @@ export type Threat = Record<string, unknown> & {
 };
 export type AdminQueue = { pending: number; verified: number; rejected: number; incidents: Threat[] };
 export type AuditEntry = { timestamp: string; analyst: string; action: string; reason: string };
+export type IncidentRecord = {
+  id?: string;
+  date?: string;
+  actor?: string;
+  victim?: string;
+  sector?: string;
+  country?: string;
+  riskScore?: number;
+  severity?: string;
+  sourceName?: string;
+  title?: string;
+  login?: string;
+  credential?: string;
+  [key: string]: unknown;
+};
+
 export type ScanResult = {
   query: string;
   searchType: string;
-  records: Array<Record<string, unknown>>;
+  records: IncidentRecord[];
   stats: Record<string, number | null>;
   risk: { score: number; level: string; barColor: string };
   recommendations: Array<{ priority: string; color: string; items: string[] }>;
+  sourcesChecked?: Array<{ name: string; status: string; hits: number; url: string }>;
+  actorProfile?: {
+    name: string;
+    origin: string;
+    sponsored: string;
+    description: string;
+    targetSectors: string[];
+    typicalTools: string[];
+    riskScore: number;
+    confidence: number;
+    externals: Record<string, string>;
+  };
 };
 export type ConsultedScan = { query?: string; searchType: string; riskScore: number; totalLogins: number; timestamp: string };
 export type DashboardKpis = { threatsToday: number; critical: number; verified: number; pending: number; actors: number; sectors: number };

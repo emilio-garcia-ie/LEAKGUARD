@@ -8,16 +8,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, statusBadge } from "@/components/ui/badge";
 import { api, Threat } from "@/lib/api";
 import { useLang } from "@/contexts/language-context";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function ThreatDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { t } = useLang();
+  const { user } = useAuth();
   const [threat, setThreat] = useState<Threat | null>(null);
 
   useEffect(() => {
-    if (id) api.threat(id).then(setThreat).catch(() => setThreat(null));
-  }, [id]);
+    if (user && id) {
+      api.threat(id).then(setThreat).catch(() => setThreat(null));
+    }
+  }, [id, user]);
 
   if (!threat) {
     return (

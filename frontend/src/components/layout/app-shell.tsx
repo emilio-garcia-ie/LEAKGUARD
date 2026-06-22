@@ -20,6 +20,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const nav = [
     { href: "/dashboard", label: t.nav_dashboard, dot: "bg-cyan-400" },
     { href: "/exposure", label: t.nav_exposure, dot: "bg-purple-400" },
+    { href: "/resources", label: t.nav_resources, dot: "bg-emerald-400" },
     { href: "/admin", label: t.nav_admin, dot: "bg-orange-400" },
     { href: "/ai-safety", label: t.nav_ai_safety, dot: "bg-violet-400" },
   ];
