@@ -193,6 +193,9 @@ export type Translations = {
   darkweb_indicator: string;
   // No results
   no_results_filter: string;
+  footer_terms: string;
+  login_accept_terms_prefix: string;
+  login_accept_terms_link: string;
 };
 
 const translations: Record<Lang, Translations> = {
@@ -364,6 +367,9 @@ const translations: Record<Lang, Translations> = {
     darkweb_forum: "Foro",
     darkweb_indicator: "Indicador",
     no_results_filter: "No hay resultados con los filtros aplicados.",
+    footer_terms: "Términos y Condiciones",
+    login_accept_terms_prefix: "Acepto los ",
+    login_accept_terms_link: "términos y condiciones",
   },
 
   en: {
@@ -534,6 +540,9 @@ const translations: Record<Lang, Translations> = {
     darkweb_forum: "Forum",
     darkweb_indicator: "Indicator",
     no_results_filter: "No results with current filters.",
+    footer_terms: "Terms & Conditions",
+    login_accept_terms_prefix: "I accept the ",
+    login_accept_terms_link: "terms and conditions",
   },
 
   ru: {
@@ -704,6 +713,9 @@ const translations: Record<Lang, Translations> = {
     darkweb_forum: "Форум",
     darkweb_indicator: "Индикатор",
     no_results_filter: "Нет результатов с текущими фильтрами.",
+    footer_terms: "Условия использования",
+    login_accept_terms_prefix: "Я принимаю ",
+    login_accept_terms_link: "условия использования",
   },
 
   he: {
@@ -874,6 +886,9 @@ const translations: Record<Lang, Translations> = {
     darkweb_forum: "פורום",
     darkweb_indicator: "מחוון",
     no_results_filter: "אין תוצאות עם הפילטרים הנוכחיים.",
+    footer_terms: "תנאי שימוש",
+    login_accept_terms_prefix: "אני מסכים ל",
+    login_accept_terms_link: "תנאי השימוש",
   },
 };
 

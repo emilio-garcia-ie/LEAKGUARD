@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { termsData } from "@/app/terms/termsData";
 
 export default function LoginPage() {
   const { login, register, demo, user, loading } = useAuth();
@@ -22,6 +23,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [alert, setAlert] = useState("");
   const [langOpen, setLangOpen] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   if (!loading && user) {
     router.replace("/dashboard");
@@ -30,6 +33,10 @@ export default function LoginPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptedTerms) {
+      setError(lang === "es" ? "Debe aceptar los términos y condiciones." : "You must accept the terms and conditions.");
+      return;
+    }
     setError("");
     try {
       const breachAlert =
@@ -46,8 +53,16 @@ export default function LoginPage() {
     router.push("/dashboard");
   };
 
+  const handleCheckboxChange = (checked: boolean) => {
+    if (checked) {
+      setShowTermsModal(true);
+    } else {
+      setAcceptedTerms(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 relative">
       {/* Language switcher - top right */}
       <div className="fixed top-4 right-4 z-50">
         <div className="relative">
@@ -80,7 +95,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-2 text-cyan-400"><Shield className="w-8 h-8" /></div>
           <CardTitle>{t.login_title}</CardTitle>
@@ -96,14 +111,129 @@ export default function LoginPage() {
             )}
             <Input type="email" placeholder={t.email_placeholder} value={email} onChange={(e) => setEmail(e.target.value)} required />
             <Input type="password" placeholder={t.password_placeholder} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-            {error && <p className="text-red-400 text-sm">{error}</p>}
+            
+            {/* Terms and Conditions Checkbox */}
+            <div className="flex items-start gap-2.5 py-1.5 px-0.5 select-none" dir={LANG_META[lang]?.dir === "rtl" ? "rtl" : "ltr"}>
+              <input
+                type="checkbox"
+                id="accept-terms"
+                checked={acceptedTerms}
+                onChange={(e) => handleCheckboxChange(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-slate-700 bg-slate-900 text-cyan-500 focus:ring-cyan-500/20 cursor-pointer accent-cyan-500 shrink-0"
+              />
+              <label htmlFor="accept-terms" className="text-xs text-slate-400 leading-normal cursor-pointer">
+                <span>{t.login_accept_terms_prefix}</span>
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(true)}
+                  className="text-cyan-400 hover:text-cyan-300 hover:underline font-bold transition-all focus:outline-none inline-block px-1"
+                >
+                  {t.login_accept_terms_link}
+                </button>
+              </label>
+            </div>
+
+            {error && <p className="text-red-400 text-sm font-medium">{error}</p>}
             {alert && <p className="text-yellow-400 text-sm">{alert}</p>}
-            <Button type="submit" className="w-full">{tab === "login" ? t.login_btn : t.register_btn}</Button>
+            <Button type="submit" className="w-full font-bold" disabled={!acceptedTerms}>
+              {tab === "login" ? t.login_btn : t.register_btn}
+            </Button>
           </form>
           <Button variant="outline" className="w-full mt-3" onClick={handleDemo}>{t.demo_btn}</Button>
-          <Link href="/" className="block text-center text-sm text-slate-500 mt-4 hover:text-cyan-400">{t.back_home}</Link>
+          <div className="flex items-center justify-between text-xs text-slate-500 mt-4">
+            <Link href="/" className="hover:text-cyan-400 transition-colors">{t.back_home}</Link>
+            <Link href="/terms" className="hover:text-cyan-400 transition-colors underline">{t.footer_terms}</Link>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Terms and Conditions Modal Overlay */}
+      {showTermsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm transition-all duration-300">
+          <div className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl border border-white/10 bg-slate-900/95 text-slate-100 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="p-6 border-b border-white/5 flex items-center justify-between" dir={LANG_META[lang]?.dir === "rtl" ? "rtl" : "ltr"}>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white tracking-tight">
+                    {termsData[lang]?.title || termsData.es.title}
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {termsData[lang]?.subtitle || termsData.es.subtitle}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowTermsModal(false);
+                  setAcceptedTerms(false);
+                }}
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors flex items-center justify-center font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar text-sm" dir={LANG_META[lang]?.dir === "rtl" ? "rtl" : "ltr"}>
+              <p className="text-slate-300 leading-relaxed text-sm">
+                {termsData[lang]?.intro || termsData.es.intro}
+              </p>
+
+              <div className="space-y-6">
+                {(termsData[lang]?.sections || termsData.es.sections).map((section, idx) => {
+                  const Icon = section.icon;
+                  return (
+                    <div key={idx} className="p-4 rounded-xl border border-white/5 bg-white/[0.01]">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Icon className="w-4 h-4 text-cyan-400" />
+                        <h3 className="font-bold text-white text-sm">{section.title}</h3>
+                      </div>
+                      <div className="space-y-2 text-slate-300 text-xs leading-relaxed">
+                        {section.content.map((p, pIdx) => (
+                          <p key={pIdx}>{p}</p>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Warning note */}
+              <div className="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 text-slate-300 text-xs leading-relaxed">
+                {termsData[lang]?.footerNote || termsData.es.footerNote}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-white/5 flex justify-end gap-3 bg-slate-950/40 rounded-b-3xl" dir={LANG_META[lang]?.dir === "rtl" ? "rtl" : "ltr"}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowTermsModal(false);
+                  setAcceptedTerms(false);
+                }}
+              >
+                {lang === "es" ? "Cerrar" : lang === "ru" ? "Закрыть" : lang === "he" ? "סגור" : "Close"}
+              </Button>
+              <Button
+                size="sm"
+                className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white"
+                onClick={() => {
+                  setAcceptedTerms(true);
+                  setShowTermsModal(false);
+                }}
+              >
+                {lang === "es" ? "Aceptar Términos" : lang === "ru" ? "Принять условия" : lang === "he" ? "אשר תנאים" : "Accept Terms"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

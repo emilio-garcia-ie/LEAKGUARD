@@ -8,6 +8,7 @@ import {
   Key, RefreshCw, Mail, MousePointer, Smartphone,
   CheckCircle, ExternalLink,
   LockOpen, Database, Building, ClipboardList, CloudLightning, Radio, Search, MessageSquare,
+  Github,
 } from "lucide-react";
 import { useLang, LANG_META, Lang } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
@@ -29,15 +30,14 @@ function CyberCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
-    const SYMBOLS = ["LOCK", "SECURE", "SHIELD", "THREAT", "PORT", "WARN", "0101", "IP", "CVE", "RAG", "FAISS", "AES", "SSL", "OSINT", "DATA"];
-    const LINES = Array.from({ length: 60 }, () => ({
+    const LINES = Array.from({ length: 45 }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      speed: 0.4 + Math.random() * 1.2,
-      symbol: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-      opacity: 0.08 + Math.random() * 0.18,
-      size: 9 + Math.random() * 8,
-      drift: (Math.random() - 0.5) * 0.3,
+      speed: 0.3 + Math.random() * 0.9,
+      type: Math.floor(Math.random() * 5),
+      opacity: 0.05 + Math.random() * 0.15,
+      size: 14 + Math.random() * 10,
+      drift: (Math.random() - 0.5) * 0.2,
     }));
 
     // Binary rain particles
@@ -73,16 +73,78 @@ function CyberCanvas() {
         }
       });
 
-      // Falling icons
+      // Falling icons (drawn as vectors)
       LINES.forEach((p) => {
-        ctx.globalAlpha = p.opacity;
+        ctx.strokeStyle = "#00F5FF";
         ctx.fillStyle = "#00F5FF";
-        ctx.font = `bold ${p.size}px JetBrains Mono, monospace`;
-        ctx.fillText(p.symbol, p.x, p.y);
+        ctx.lineWidth = 1.2;
+        ctx.globalAlpha = p.opacity;
+
+        if (p.type === 0) {
+          // Shield
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y - p.size / 2);
+          ctx.quadraticCurveTo(p.x + p.size / 2, p.y - p.size / 2, p.x + p.size / 2, p.y);
+          ctx.quadraticCurveTo(p.x + p.size / 2, p.y + p.size / 2, p.x, p.y + p.size);
+          ctx.quadraticCurveTo(p.x - p.size / 2, p.y + p.size / 2, p.x - p.size / 2, p.y);
+          ctx.quadraticCurveTo(p.x - p.size / 2, p.y - p.size / 2, p.x, p.y - p.size / 2);
+          ctx.closePath();
+          ctx.stroke();
+        } else if (p.type === 1) {
+          // Lock
+          // Shackle
+          ctx.beginPath();
+          ctx.arc(p.x, p.y - p.size / 6, p.size / 3, Math.PI, 0);
+          ctx.lineTo(p.x + p.size / 3, p.y + p.size / 6);
+          ctx.lineTo(p.x - p.size / 3, p.y + p.size / 6);
+          ctx.stroke();
+          // Body
+          ctx.strokeRect(p.x - p.size / 2, p.y + p.size / 6, p.size, p.size * 0.6);
+          // Keyhole dot
+          ctx.beginPath();
+          ctx.arc(p.x, p.y + p.size / 2.5, p.size / 10, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (p.type === 2) {
+          // Key
+          ctx.beginPath();
+          ctx.arc(p.x - p.size / 3, p.y, p.size / 3, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x + p.size * 0.7, p.y);
+          ctx.lineTo(p.x + p.size * 0.7, p.y + p.size / 3);
+          ctx.moveTo(p.x + p.size * 0.5, p.y);
+          ctx.lineTo(p.x + p.size * 0.5, p.y + p.size / 3);
+          ctx.stroke();
+        } else if (p.type === 3) {
+          // Radar/Target
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size / 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(p.x - p.size / 1.5, p.y);
+          ctx.lineTo(p.x + p.size / 1.5, p.y);
+          ctx.moveTo(p.x, p.y - p.size / 1.5);
+          ctx.lineTo(p.x, p.y + p.size / 1.5);
+          ctx.stroke();
+        } else if (p.type === 4) {
+          // Hexagon
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i;
+            ctx.lineTo(p.x + (p.size / 2) * Math.cos(angle), p.y + (p.size / 2) * Math.sin(angle));
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+
         p.y += p.speed;
         p.x += p.drift;
-        if (p.y > canvas.height + 40) {
-          p.y = -40;
+        if (p.y > canvas.height + p.size) {
+          p.y = -p.size;
           p.x = Math.random() * canvas.width;
         }
       });
@@ -423,10 +485,29 @@ export default function LandingPage() {
 
       {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-white/5 py-8 px-4 text-center">
-        <div className="flex items-center justify-center gap-2 text-slate-500 text-sm mb-2">
-          <Shield className="w-4 h-4 text-cyan-500" />
-          <span>LeakGuard © 2026 — Threat Intelligence & OSINT Platform</span>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-slate-500 text-sm mb-2">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-cyan-500" />
+            <span>LeakGuard © 2026 — Threat Intelligence & OSINT Platform</span>
+          </div>
+          <span className="hidden sm:inline text-white/10">|</span>
+          <Link href="/terms" className="text-cyan-400 hover:text-cyan-300 hover:underline transition-all">
+            {t.footer_terms}
+          </Link>
         </div>
+
+        {/* Contributors Section */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-4 mb-4 text-xs text-slate-400">
+          <span className="text-slate-500 flex items-center gap-1"><Github className="w-3.5 h-3.5 text-slate-400" /> Contributors:</span>
+          <a href="https://github.com/paltaunkwnow" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 hover:underline transition-colors">@paltaunkwnow</a>
+          <span className="text-slate-700 font-bold">•</span>
+          <a href="https://github.com/emilio-garcia-ie" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 hover:underline transition-colors">@emilio-garcia-ie</a>
+          <span className="text-slate-700 font-bold">•</span>
+          <a href="https://github.com/invertilo" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 hover:underline transition-colors">@invertilo</a>
+          <span className="text-slate-700 font-bold">•</span>
+          <a href="https://github.com/fernandocastedo" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 hover:underline transition-colors">@fernandocastedo</a>
+        </div>
+
         <p className="text-slate-600 text-xs">
           Powered by FastAPI · Next.js · PostgreSQL · FAISS · OpenAI
         </p>
