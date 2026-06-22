@@ -1,6 +1,7 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/LeakGuard-v3.4-00F5FF?style=for-the-badge&labelColor=040B14&borderColor=00F5FF" alt="LeakGuard" />
+  <img src="https://img.shields.io/badge/LeakGuard-v3.5-00F5FF?style=for-the-badge&labelColor=040B14&borderColor=00F5FF" alt="LeakGuard" />
   <img src="https://img.shields.io/badge/Gemini_2.5_Flash-Inside-7C3AED?style=for-the-badge&labelColor=040B14" alt="Gemini" />
+  <img src="https://img.shields.io/badge/Terms_%26_Conditions-ES%20%7C%20EN%20%7C%20RU%20%7C%20HE-00C853?style=for-the-badge&labelColor=040B14" alt="T&C" />
 </p>
 
 <h1 align="center">🛡️ LeakGuard</h1>
@@ -23,38 +24,46 @@
 ## 🗂️ Tabla de Contenidos
 
 - [Descripción](#descripción)
-- [Novedades en v3.4.0](#novedades-en-v340)
+- [Novedades en v3.5.0](#novedades-en-v350)
 - [Stack Tecnológico](#stack-tecnológico)
 - [Arquitectura](#arquitectura)
 - [Inicio Rápido](#inicio-rápido)
 - [Configuración de Entorno](#configuración-de-entorno)
-- [Módulos de la Plataforma](#módulos-de-la-plataforma)
-- [API Endpoints](#api-endpoints)
-- [Testing & Integración Continua](#testing--integración-continua)
 - [Seguridad & Privacidad](#seguridad--privacidad)
+- [Términos y Condiciones](#términos-y-condiciones)
+- [Contribuidores](#contribuidores)
 
 ---
 
 ## 📖 Descripción
 
-**LeakGuard** proporciona a analistas y equipos de ciberseguridad una consola centralizada para monitorear y mitigar filtraciones de credenciales. 
+**LeakGuard** proporciona a analistas y equipos de ciberseguridad una consola centralizada para monitorear y mitigar filtraciones de credenciales.
 
 ### Características principales:
 - **Proxy Seguro:** El navegador del cliente nunca interactúa directamente con proveedores OSINT de pago, previniendo fugas de claves de API.
-- **Iconografía Profesional y Limpia:** Interfaz corporativa libre de emojis basada exclusivamente en componentes **Lucide-react** con badges de países (`[AR]`, `[CL]`, `[BO]`, etc.).
-- **Asistente IA (Gemini 2.5 Flash):** Chat interactivo para profundizar en mitigaciones e impacto técnico directamente con la IA de Google mediante su API REST nativa.
+- **Iconografía Profesional:** Interfaz corporativa basada exclusivamente en componentes **Lucide-react** con badges de países (`[AR]`, `[CL]`, `[BO]`, etc.).
+- **Asistente IA (Gemini 2.5 Flash):** Chat interactivo para profundizar en mitigaciones e impacto técnico directamente con la IA de Google.
 - **K-Anonymity:** Buscador seguro mediante hash SHA-256 truncado para proteger la privacidad del usuario al escanear.
+- **Términos y Condiciones Multiidioma:** Cobertura legal en Español, Inglés, Ruso y Hebreo con marco jurisdiccional de EE. UU.
 
 ---
 
-## 🔥 Novedades en v3.4.0
+## 🔥 Novedades en v3.5.0
+
+1. **Términos & Condiciones Legales Multiidioma:** Página completa de T&C con 5 secciones legales (Propósito, Neutralidad, Censura, Privacidad, Jurisdicción) disponibles en **ES · EN · RU · HE**.
+2. **Modal de Aceptación en Login:** Checkbox obligatorio en el formulario de inicio de sesión que despliega los T&C en modal. No se permite acceder sin aceptación explícita.
+3. **Sección de Contribuidores en Landing:** Footer actualizado con los perfiles GitHub de todos los colaboradores del proyecto.
+4. **Canvas de Iconos Profesionales:** El fondo animado del landing page ahora usa iconos vectoriales dibujados a mano (Shield, Lock, Key, Radar, Hexagon) en lugar de texto ASCII.
+5. **Corrección de Caché Next.js:** Resolución del error `MODULE_NOT_FOUND` por chunks corruptos en `.next`.
+
+### Versión anterior — v3.4.0
 
 1. **Google Gemini 2.5 Flash Nativo:** Eliminación de los wrappers de OpenAI SDK para conectar directamente mediante REST (`httpx`) con el endpoint oficial de Google Generative Language.
-2. **Chat Assistant en AI Safety:** Panel conversacional interactivo para consultar detalles técnicos del incidente RAG (FAISS) con Gemini en tiempo real.
-3. **Expansión LATAM:** Seeding inicial extendido con filtraciones principales para **Bolivia (YPFB)**, **Brasil (Petrobras)**, **Perú (MEF)**, **Colombia (Claro)** y **México (Banxico)**.
-4. **Emoji-Free UI:** Reemplazo integral de emojis en tablas, popups de mapas y selectores por badges de diseño premium.
-5. **Cero Fugas de Auth:** Control de peticiones asíncronas para evitar llamadas 401 a la API antes de resolver el estado de autenticación (`useAuth()`).
-6. **Bypass de Bcrypt local:** Solución definitiva para incompatibilidades en registro local mediante `bcrypt` puro en backend en reemplazo de `passlib` obsoleto.
+2. **Chat Assistant en AI Safety:** Panel conversacional interactivo con RAG (FAISS) + Gemini en tiempo real.
+3. **Expansión LATAM:** Seeding extendido con filtraciones para **Bolivia**, **Brasil**, **Perú**, **Colombia** y **México**.
+4. **Emoji-Free UI:** Reemplazo integral de emojis por badges de diseño premium.
+5. **Cero Fugas de Auth:** Control de peticiones asíncronas para evitar llamadas 401 antes de resolver el estado de autenticación.
+6. **Bypass de Bcrypt local:** Solución para incompatibilidades en registro local mediante `bcrypt` puro.
 
 ---
 
@@ -62,12 +71,13 @@
 
 | Capa | Tecnología |
 |------|------------|
-| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Vitest |
+| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui |
 | **Backend** | Python 3.11 + FastAPI (async nativo), pytest |
-| **Base de Datos** | PostgreSQL (Auditoría, Incidentes, Logs de consultas y Usuarios) |
+| **Base de Datos** | PostgreSQL (Auditoría, Incidentes, Logs, Usuarios) |
 | **Cache & Colas** | Redis (Cache de feed ransomware y estado de APIs) |
 | **Inteligencia Artificial** | Gemini 2.5 Flash + FAISS (RAG Local y Offline en fallback) |
 | **Monitoreo & OSINT** | Playwright + BeautifulSoup + leakosintapi.com |
+| **i18n Legal** | Español · English · Русский · עברית |
 
 ---
 
@@ -78,6 +88,7 @@ flowchart TD
     subgraph Cliente["Frontend (Next.js 14)"]
         UI["UI Console"]
         Chat["Gemini 2.5 Chat UI"]
+        TC["T&C Modal (ES/EN/RU/HE)"]
     end
 
     subgraph Servidor["Backend (FastAPI)"]
@@ -99,6 +110,7 @@ flowchart TD
 
     UI --> API
     Chat --> API
+    TC --> UI
     API --> PG
     API --> RD
     OSINT --> LO
@@ -112,7 +124,7 @@ flowchart TD
 
 ### Opción A — Ejecución con Docker (Recomendado)
 
-1. Crea las variables de entorno en la raíz copiando el archivo `.env.example`:
+1. Crea las variables de entorno copiando el archivo `.env.example`:
    ```bash
    cp .env.example .env
    ```
@@ -138,7 +150,7 @@ docker compose up postgres redis -d
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate # Windows: .\.venv\Scripts\activate
+source .venv/bin/activate   # Windows: .\.venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
 # Edita tu archivo .env con las API Keys correspondientes
@@ -166,11 +178,54 @@ npm run dev
 
 ## 🔒 Seguridad & Privacidad
 
-1. **Anonimato en Búsquedas:** Las consultas de escaneo almacenadas en PostgreSQL se registran únicamente como hash SHA-256 (`query_hash`).
-2. **Censura en Servidor:** Las contraseñas y credenciales sensibles devueltas se ofuscan en el backend (`*****`) antes de ser enviadas al navegador del cliente.
-3. **Control de JWT:** Sesión protegida y autenticación robusta mediante firmas HS256 locales.
+1. **Anonimato en Búsquedas:** Las consultas se registran únicamente como hash SHA-256 (`query_hash`). No almacenamos búsquedas en texto plano ni direcciones IP.
+2. **Censura en Servidor:** Contraseñas y credenciales sensibles se ofuscan en el backend (`*****`) antes de ser enviadas al cliente.
+3. **Control de JWT:** Sesión protegida mediante firmas HS256 locales.
+4. **Sin Venta de Datos:** Los datos de registro (nombre y correo) se usan exclusivamente para notificar al usuario sobre filtraciones detectadas. No se comercializan ni comparten con terceros.
 
 ---
+
+## ⚖️ Términos y Condiciones
+
+LeakGuard opera bajo los principios legales de **plataforma intermediaria** conforme al marco de la **Section 230 del Communications Decency Act (EE. UU.)** y prácticas similares a las de plataformas de inteligencia OSINT como IntelX.
+
+### Puntos clave:
+- 🔍 **Solo información pública:** LeakGuard indexa y presenta datos que ya son públicamente accesibles en internet. No participamos ni facilitamos hackeos o filtraciones.
+- 🚫 **Sin responsabilidad por filtraciones:** La plataforma no es responsable del origen de los datos filtrados. La responsabilidad de su uso recae exclusivamente en el usuario.
+- 🔐 **Contraseñas censuradas:** Todas las contraseñas en texto plano son automáticamente ofuscadas antes de ser mostradas.
+- 🌐 **Jurisdicción:** Cualquier disputa legal se rige bajo la ley del Estado de **Delaware, EE. UU.**
+- 📄 **Idiomas disponibles:** Español · English · Русский · עברית
+
+> Ver página completa en: `/terms`
+
+---
+
+## 👥 Contribuidores
+
+<p align="center">
+  <a href="https://github.com/paltaunkwnow">
+    <img src="https://github.com/paltaunkwnow.png" width="60" style="border-radius:50%" alt="paltaunkwnow"/>
+  </a>&nbsp;&nbsp;
+  <a href="https://github.com/emilio-garcia-ie">
+    <img src="https://github.com/emilio-garcia-ie.png" width="60" style="border-radius:50%" alt="emilio-garcia-ie"/>
+  </a>&nbsp;&nbsp;
+  <a href="https://github.com/invertilo">
+    <img src="https://github.com/invertilo.png" width="60" style="border-radius:50%" alt="invertilo"/>
+  </a>&nbsp;&nbsp;
+  <a href="https://github.com/fernandocastedo">
+    <img src="https://github.com/fernandocastedo.png" width="60" style="border-radius:50%" alt="fernandocastedo"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/paltaunkwnow"><b>@paltaunkwnow</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/emilio-garcia-ie"><b>@emilio-garcia-ie</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/invertilo"><b>@invertilo</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/fernandocastedo"><b>@fernandocastedo</b></a>
+</p>
+
+---
+
 <p align="center">
   Diseñado con pasión para mitigar riesgos en Latinoamérica. <strong>LeakGuard © 2026</strong>.
 </p>
