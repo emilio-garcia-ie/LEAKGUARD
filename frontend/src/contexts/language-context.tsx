@@ -137,6 +137,7 @@ export type Translations = {
   col_country: string;
   consulted_title: string;
   consulted_clear: string;
+  consulted_hash_label: string;
   darkweb_title: string;
   recent_breaches_title: string;
   no_consulted: string;
@@ -340,6 +341,7 @@ const translations: Record<Lang, Translations> = {
     col_country: "País",
     consulted_title: "Consultas realizadas",
     consulted_clear: "Limpiar",
+    consulted_hash_label: "Consulta",
     darkweb_title: "Dark Web / Foros clandestinos",
     recent_breaches_title: "Filtraciones públicas recientes",
     no_consulted: "Aún no realizaste consultas.",
@@ -533,6 +535,7 @@ const translations: Record<Lang, Translations> = {
     col_country: "Country",
     consulted_title: "Queries Made",
     consulted_clear: "Clear",
+    consulted_hash_label: "Query",
     darkweb_title: "Dark Web / Underground Forums",
     recent_breaches_title: "Recent Public Breaches",
     no_consulted: "No queries made yet.",
@@ -726,6 +729,7 @@ const translations: Record<Lang, Translations> = {
     col_country: "Страна",
     consulted_title: "Выполненные запросы",
     consulted_clear: "Очистить",
+    consulted_hash_label: "Запрос",
     darkweb_title: "Тёмная сеть / Подпольные форумы",
     recent_breaches_title: "Недавние публичные утечки",
     no_consulted: "Запросов пока нет.",
@@ -919,6 +923,7 @@ const translations: Record<Lang, Translations> = {
     col_country: "מדינה",
     consulted_title: "שאילתות שבוצעו",
     consulted_clear: "ניקוי",
+    consulted_hash_label: "שאילתה",
     darkweb_title: "רשת אפלה / פורומים מחתרתיים",
     recent_breaches_title: "דליפות ציבוריות אחרונות",
     no_consulted: "עדיין לא בוצעו שאילתות.",

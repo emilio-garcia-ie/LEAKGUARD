@@ -47,7 +47,7 @@ export const termsData: Record<Lang, {
         title: "5. Naturaleza del servicio y alojamiento de datos",
         icon: EyeOff,
         content: [
-          "LeakGuard opera únicamente como motor de búsqueda e índice analítico de metadatos relacionados con incidentes de seguridad. LeakGuard no aloja, almacena ni distribuye los volcados de datos comprometidos originales ni materiales de hacking en bruto. Para proteger la privacidad, todas las consultas están sujetas a censura en el servidor y protocolos de K-Anonymity. Usted reconoce que la visualización de metadatos expuestos no le otorga propiedad ni derechos para explotar dichos datos."
+          "LeakGuard opera únicamente como motor de búsqueda e índice analítico de metadatos relacionados con incidentes de seguridad. LeakGuard no aloja, almacena ni distribuye los volcados de datos comprometidos originales ni materiales de hacking en bruto. Para proteger la privacidad, todas las consultas están sujetas a censura en el servidor y protocolos de K-Anonymity. Los campos de credenciales e identidad se censuran en el servidor antes de enviar cualquier respuesta API al cliente; las contraseñas en texto plano nunca se transmiten. Usted reconoce que la visualización de metadatos expuestos no le otorga propiedad ni derechos para explotar dichos datos."
         ]
       },
       {
@@ -75,7 +75,7 @@ export const termsData: Record<Lang, {
         title: "9. Privacidad y registro de auditoría",
         icon: Lock,
         content: [
-          "Al utilizar LeakGuard, usted reconoce y acepta que sus acciones en la plataforma, incluidos los metadatos de sus consultas, están sujetas a registro con fines de seguridad, auditoría y cumplimiento normativo, según se describe en nuestra Política de Privacidad. Utilizamos K-Anonymity y hash parcial para proteger la confidencialidad de los términos de búsqueda específicos. Los datos personales de registro (nombre y correo electrónico) se utilizan estrictamente para configurar el perfil y enviar alertas; no vendemos ni comercializamos la información personal de nuestros usuarios."
+          "Al utilizar LeakGuard, usted reconoce y acepta que sus acciones en la plataforma, incluidos los metadatos de sus consultas, están sujetas a registro con fines de seguridad, auditoría y cumplimiento normativo, según se describe en nuestra Política de Privacidad. Utilizamos K-Anonymity y hash parcial para proteger la confidencialidad de los términos de búsqueda específicos; el texto legible de la consulta no se almacena en el servidor. Los datos personales de registro (nombre y correo electrónico) se utilizan estrictamente para configurar el perfil y enviar alertas; no vendemos ni comercializamos la información personal de nuestros usuarios."
         ]
       },
       {
@@ -126,7 +126,7 @@ export const termsData: Record<Lang, {
         title: "5. Nature of Services and Data Hosting",
         icon: EyeOff,
         content: [
-          "LeakGuard operates solely as a search engine and analytical index for metadata related to security incidents. LeakGuard does not host, store, or distribute the original compromised data dumps or raw hacking materials. To protect privacy, all queries are subjected to server-side censorship and K-Anonymity protocols. You acknowledge that viewing exposed metadata does not grant you ownership or rights to exploit said data."
+          "LeakGuard operates solely as a search engine and analytical index for metadata related to security incidents. LeakGuard does not host, store, or distribute the original compromised data dumps or raw hacking materials. To protect privacy, all queries are subjected to server-side censorship and K-Anonymity protocols. Credential and identity fields are censored on the server before any API response is sent to the client; plaintext passwords are never transmitted. You acknowledge that viewing exposed metadata does not grant you ownership or rights to exploit said data."
         ]
       },
       {
@@ -154,7 +154,7 @@ export const termsData: Record<Lang, {
         title: "9. Privacy and Audit Logging",
         icon: Lock,
         content: [
-          "By using LeakGuard, you acknowledge and agree that your actions on the platform, including metadata of your queries, are subject to logging for security, auditing, and compliance purposes as outlined in our Privacy Policy. We utilize K-Anonymity and partial hashing to protect the confidentiality of specific search terms. Registration data (name and email) is used strictly to set up your profile and deliver alerts; we do not sell or trade our users' personal information."
+          "By using LeakGuard, you acknowledge and agree that your actions on the platform, including metadata of your queries, are subject to logging for security, auditing, and compliance purposes as outlined in our Privacy Policy. We utilize K-Anonymity and partial hashing to protect the confidentiality of specific search terms; plaintext query strings are not stored on the server. Registration data (name and email) is used strictly to set up your profile and deliver alerts; we do not sell or trade our users' personal information."
         ]
       },
       {

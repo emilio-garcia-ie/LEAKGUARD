@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Mandatory legal consent checkbox on login** — CFAA-style warranty text in all four UI languages; login, registration, and demo access are blocked until the user accepts. Closes a gap where demo bypassed consent and the prior checkbox only said “accept terms” without representing lawful ownership of queried assets.
 - **Auth consent helper and tests** — `frontend/src/app/login/auth-consent.ts` plus Vitest coverage for consent gating and `termsData` structure.
 
+### Fixed
+
+- **Credential leak in exposure scan API** — Removed uncensored `normalized` field from `POST /api/v1/exposure/scan` responses. UI censorship was ineffective because DevTools/curl could read plaintext passwords in the JSON payload.
+
 ### Changed
 
-- **Privacy claims in ToS** — Removed the inaccurate statement that LeakGuard does not store search queries; section 9 now describes security/audit logging aligned with backend `consulted_scans` behavior (metadata and hashed queries).
+- **Hash-only consulted scan history** — `consulted_scans` no longer stores plaintext `query`; only `query_hash` and scan metadata. Dashboard shows search type and anonymized hash prefix instead of the raw query string.
+- **Privacy claims in ToS** — Removed the inaccurate statement that LeakGuard does not store search queries; section 9 now describes security/audit logging aligned with backend `consulted_scans` behavior (metadata and hashed queries). Section 5 clarifies server-side censorship before API responses.
